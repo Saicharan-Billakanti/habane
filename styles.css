@@ -43,6 +43,50 @@ body{
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
+body[data-page="home"],
+body[data-page="shop"]{
+  --r:0;
+}
+body:is([data-page="home"], [data-page="shop"]) :is(
+  .card,
+  .card__media,
+  .card__badge,
+  .card__quick,
+  .card__add,
+  .card__view,
+  .pill,
+  .smart-split__panel,
+  .smart-split__explore,
+  .showroom__stage,
+  .showroom__loader,
+  .tool,
+  .model-pick,
+  .faq-card,
+  .faq-card__media,
+  .contact__inner,
+  .contact__card,
+  .trust,
+  .trust__item,
+  .trust__icon,
+  .shop-toolbar__search,
+  .layout-btn,
+  .shop-sidebar__block select,
+  .search-pop__inner,
+  .search-pop__results,
+  .search-row img,
+  .cart__panel,
+  .line__img,
+  .line__qty,
+  .cart__checkout,
+  .cart__empty-btn,
+  .auth-pop__panel,
+  .auth-pop__btn,
+  .loc-select__btn,
+  .loc-select__panel,
+  .loc-select__search
+){
+  border-radius:0 !important;
+}
 a{color:inherit;text-decoration:none}
 img{display:block;max-width:100%}
 em{font-style:normal}
@@ -1419,4 +1463,3 @@ a.contact__card:hover{ transform:translateY(-4px); box-shadow:0 16px 32px rgba(1
   .loc-select{ left:12px; bottom:12px }
   .checkout-form__row{ grid-template-columns:1fr }
 }
-
