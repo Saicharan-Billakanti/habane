@@ -6,7 +6,7 @@
   function initFeatured() {
     const grid = document.getElementById('grid');
     if (!grid) return;
-    const featured = H.PRODUCTS.filter(p => p.featured).slice(0, 3);
+    const featured = H.PRODUCTS.filter(p => p.featured).slice(0, 4);
     grid.innerHTML = featured.map(p => H.cardHTML(p)).join('');
     H.bindGrid(grid);
     H.observeCards();
@@ -121,7 +121,12 @@
   document.addEventListener('DOMContentLoaded', () => {
     if (window.gsap && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
     H.initShared();
-    H.initCoin(document.getElementById('heroCoin'));
+    
+    const heroViewer = document.getElementById('heroViewer');
+    if (heroViewer && window.HABANE_MODELS) {
+      heroViewer.src = window.HABANE_MODELS.voyager;
+    }
+
     const bagCta = document.querySelector('#heroBagCta .hero-shop-cta__anim');
     if (bagCta) H.initBag3d(bagCta);
     initFeatured();

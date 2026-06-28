@@ -71,16 +71,16 @@
 
   <main id="top">
 
-    <section class="hero hero--coin">
+    <section class="hero hero--bag">
       <div class="hero__glow"></div>
       <div class="hero__layout">
         <div class="hero__inner">
           <p class="hero__eyebrow">EST. — CARRY THE CITY</p>
           <h1 class="hero__title">
-            <span>BAGS THAT</span>
-            <span class="hero__title--metal">MOVE LIKE YOU.</span>
+            <span>THE ULTIMATE</span>
+            <span class="hero__title--metal">TECH TRAVEL BAG.</span>
           </h1>
-          <p class="hero__sub">Smart duffels, weekenders &amp; backpacks engineered in metallic silver and midnight navy. Built for the people who never really unpack.</p>
+          <p class="hero__sub">Smart duffels, weekenders &amp; backpacks engineered for modern travel. Built-in USB charging ports, biometric fingerprint locks, and premium structured organization for all your tech gear.</p>
           <div class="hero__cta">
             <a href="shop.html" class="hero-shop-cta" id="heroBagCta">
               <span class="hero-shop-cta__anim"></span>
@@ -92,7 +92,14 @@
             </a>
           </div>
         </div>
-        <div class="hero__coin-wrap" id="heroCoin" aria-label="Habäne 3D coin animation"></div>
+        <div class="hero__bag-3d-wrap">
+          <model-viewer id="heroViewer" alt="Habäne Tech Travel Bag — interactive 3D model"
+            camera-controls auto-rotate auto-rotate-delay="0" rotation-per-second="15deg"
+            interaction-prompt="none" shadow-intensity="1.2" shadow-softness="0.8" exposure="1.1"
+            environment-image="neutral" camera-orbit="45deg 75deg 110%" disable-zoom touch-action="none">
+          </model-viewer>
+          <div class="hero__bag-glow"></div>
+        </div>
       </div>
       <div class="hero__marquee" aria-hidden="true">
         <div class="hero__marquee-track">
@@ -349,7 +356,6 @@
   <script src="js/data.js"></script>
   <script src="js/store.js"></script>
   <script src="js/components.js"></script>
-  <script src="js/coin-3d.js"></script>
   <script src="js/bag-3d.js"></script>
   <script src="js/home.js"></script>
 </body>

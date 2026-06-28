@@ -347,32 +347,38 @@
 
   /* ---- Product card HTML ---- */
   H.cardHTML = function (p, opts = {}) {
-    const badge = p.badge ? `<span class="card__badge ${p.badge === 'SMART' ? 'card__badge--smart' : ''}">${p.badge}</span>` : '';
-    const was = p.was ? `<s>${inr(p.was)}</s>` : '';
+    let badgeClass = 'card__badge--black';
+    if (p.badge === 'BESTSELLER' || p.badge === 'SALE' || p.badge === 'TRENDING') {
+      badgeClass = 'card__badge--red';
+    }
+    const badge = p.badge ? `<span class="card__badge ${badgeClass}">${p.badge}</span>` : '';
+    const was = p.was ? `<span class="card__was">${inr(p.was)}</span>` : '';
     const liked = H.isWish(p.id);
-    const sw = p.colors.map(c => `<span class="sw" title="${c.name}" style="background:${c.hex}"></span>`).join('');
     const back = p.img2 ? `<img class="card__img card__img--back" src="${p.img2}" alt="" loading="lazy">` : '';
     return `
     <article class="card ${p.img2 ? 'has-alt' : ''}" data-cat="${p.cat}" data-id="${p.id}">
       <a href="product.html?id=${p.id}" class="card__link">
         <div class="card__media">
           ${badge}
-          <button class="card__wish ${liked ? 'liked' : ''}" data-wish type="button" aria-label="Wishlist">${icon(liked ? 'heart' : 'heart')}</button>
+          <button class="card__wish ${liked ? 'liked' : ''}" data-wish type="button" aria-label="Wishlist">${icon('heart')}</button>
           <img class="card__img card__img--front" src="${p.img}" alt="${p.name}" loading="lazy">
           ${back}
           <div class="card__quick">
             <span class="card__view">VIEW DETAILS</span>
-            <button class="card__add" data-add type="button">QUICK ADD · ${inr(p.price)}</button>
+            <button class="card__add" data-add type="button">QUICK ADD</button>
           </div>
         </div>
         <div class="card__body">
-          <span class="card__cat">${p.catLabel}</span>
-          <h3 class="card__name">${p.name}</h3>
-          <div class="card__row">
-            <span class="card__price">${inr(p.price)} ${was}</span>
-            <span class="card__stars">${H.stars(p.stars)}</span>
+          <div class="card__info">
+            <div class="card__info-left">
+              <h3 class="card__name">${p.name.toUpperCase()}</h3>
+              <span class="card__cat">${p.catLabel}</span>
+            </div>
+            <div class="card__info-right">
+              <span class="card__price">${inr(p.price)}</span>
+              ${was}
+            </div>
           </div>
-          <div class="card__row"><div class="card__swatches">${sw}</div></div>
         </div>
       </a>
     </article>`;

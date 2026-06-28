@@ -53,53 +53,60 @@
       <div class="trust__item"><span class="trust__icon"><i data-lucide="infinity"></i></span><div><strong>Lifetime zipper</strong><em>warranty</em></div></div>
     </section>
 
-    <div class="shop-page__head">
-      <h1 class="section-title">ALL PRODUCTS</h1>
-      <p class="section-sub">Filter, sort, and find your perfect carry.</p>
-    </div>
-
-    <div class="shop-toolbar">
-      <div class="shop-toolbar__search">
-        <i data-lucide="search"></i>
-        <input type="text" id="shopSearch" placeholder="Search products…" autocomplete="off">
-      </div>
-      <div class="shop-toolbar__layout">
-        <button type="button" class="layout-btn is-active" data-layout="grid" aria-label="Grid view"><i data-lucide="layout-grid"></i></button>
-        <button type="button" class="layout-btn" data-layout="list" aria-label="List view"><i data-lucide="list"></i></button>
-      </div>
-    </div>
-
-    <div class="shop-layout">
-      <aside class="shop-sidebar">
-        <div class="shop-sidebar__block">
-          <h4>Category</h4>
-          <div class="cats__pills" id="shopFilters">
-            <button class="pill is-active" data-filter="all" type="button">All</button>
-            <button class="pill" data-filter="duffel" type="button">Duffels</button>
-            <button class="pill" data-filter="backpack" type="button">Backpacks</button>
-            <button class="pill" data-filter="smart" type="button">Smart Series</button>
-            <button class="pill" data-filter="sling" type="button">Slings</button>
+    <div class="shop-container">
+      <div class="shop-header">
+        <div class="shop-header__inner">
+          <h1 class="shop-header__title" id="shopTitle">ALL PRODUCTS</h1>
+          <p class="shop-header__desc" id="shopDesc">Built for everyday and everywhere travel. Habäne smart bags are engineered with premium materials, active charging systems, and modular organization.</p>
+        </div>
+        
+        <div class="shop-toolbar-new">
+          <span class="shop-toolbar-new__count" id="shopCount">0 styles</span>
+          <div class="shop-toolbar-new__actions">
+            <div class="shop-toolbar-new__sort-wrapper">
+              <button type="button" class="toolbar-action-btn" id="sortToggle">
+                <span id="sortVal">Featured</span>
+                <i data-lucide="chevron-down"></i>
+              </button>
+              <div class="sort-dropdown" id="sortDropdown">
+                <button data-sort="featured" class="sort-option is-active">Featured</button>
+                <button data-sort="low" class="sort-option">Price: Low to High</button>
+                <button data-sort="high" class="sort-option">Price: High to Low</button>
+                <button data-sort="new" class="sort-option">Newest</button>
+                <button data-sort="bestselling" class="sort-option">Best Selling</button>
+              </div>
+            </div>
+            
+            <button type="button" class="toolbar-action-btn" id="filterToggle">
+              <span>Filters</span>
+              <i data-lucide="sliders-horizontal"></i>
+            </button>
           </div>
         </div>
-        <div class="shop-sidebar__block">
-          <h4>Price</h4>
-          <input type="range" id="priceRange" min="2000" max="15000" step="500" value="15000">
-          <p class="shop-sidebar__price" id="priceLabel">Up to ₹15,000</p>
+        
+        <!-- Collapsible filter panel -->
+        <div class="filter-panel" id="filterPanel">
+          <div class="filter-panel__inner">
+            <div class="filter-group">
+              <h4>Category</h4>
+              <div class="filter-group__pills" id="shopFilters">
+                <button class="pill is-active" data-filter="all" type="button">All</button>
+                <button class="pill" data-filter="duffel" type="button">Duffels</button>
+                <button class="pill" data-filter="backpack" type="button">Backpacks</button>
+                <button class="pill" data-filter="smart" type="button">Smart Series</button>
+                <button class="pill" data-filter="sling" type="button">Slings</button>
+              </div>
+            </div>
+            <div class="filter-group">
+              <h4>Price</h4>
+              <input type="range" id="priceRange" min="2000" max="15000" step="500" value="15000">
+              <p class="filter-group__price-label" id="priceLabel">Up to ₹15,000</p>
+            </div>
+          </div>
         </div>
-        <div class="shop-sidebar__block">
-          <h4>Sort</h4>
-          <select id="shopSort">
-            <option value="featured">Featured</option>
-            <option value="low">Price: Low to High</option>
-            <option value="high">Price: High to Low</option>
-            <option value="new">Newest</option>
-            <option value="bestselling">Best Selling</option>
-          </select>
-        </div>
-      </aside>
+      </div>
 
-      <div class="shop-main">
-        <p class="shop-count" id="shopCount">0 styles</p>
+      <div class="shop-main-full">
         <div class="grid" id="shopGrid"></div>
       </div>
     </div>

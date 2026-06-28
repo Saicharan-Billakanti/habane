@@ -42,6 +42,37 @@
     H.refreshIcons();
   }
 
+  const CAT_INFO = {
+    all: {
+      title: "ALL PRODUCTS",
+      desc: "Built for everyday and everywhere travel. Habäne smart bags are engineered with premium materials, active charging systems, and modular organization."
+    },
+    duffel: {
+      title: "SMART DUFFELS",
+      desc: "High-capacity smart duffels built in metallic silver and midnight navy. Featuring dedicated clothes compression, shoe compartments, and quick travel accessibility."
+    },
+    backpack: {
+      title: "TECH BACKPACKS",
+      desc: "Sleek and secure rolltop daypacks and heritage backpacks. Perfect for daily commutes or weekend trips, with suspended laptop guards and anti-theft storage."
+    },
+    smart: {
+      title: "SMART SERIES",
+      desc: "The cutting edge of travel technology. Biometric fingerprint scanners, active RGB indicator lights, built-in device check-in panel, and charging cores."
+    },
+    sling: {
+      title: "CITY SLINGS",
+      desc: "Compact, weather-resistant crossbody bags for your everyday essentials. Safeguard your phone, cards, and keys with RFID-blocking liners and hidden pockets."
+    }
+  };
+
+  function updateHeader() {
+    const titleEl = document.getElementById('shopTitle');
+    const descEl = document.getElementById('shopDesc');
+    const info = CAT_INFO[currentFilter] || CAT_INFO.all;
+    if (titleEl) titleEl.textContent = info.title;
+    if (descEl) descEl.textContent = info.desc;
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     H.initShared();
     const params = new URLSearchParams(location.search);
@@ -51,28 +82,22 @@
         p.classList.toggle('is-active', p.dataset.filter === currentFilter);
       });
     }
+    updateHeader();
     const grid = document.getElementById('shopGrid');
     H.bindGrid(grid);
 
+    // Filter categories click
     document.getElementById('shopFilters')?.addEventListener('click', e => {
       const btn = e.target.closest('.pill');
       if (!btn) return;
       document.querySelectorAll('#shopFilters .pill').forEach(p => p.classList.remove('is-active'));
       btn.classList.add('is-active');
       currentFilter = btn.dataset.filter;
+      updateHeader();
       render();
     });
 
-    document.getElementById('shopSort')?.addEventListener('change', e => {
-      currentSort = e.target.value;
-      render();
-    });
-
-    document.getElementById('shopSearch')?.addEventListener('input', e => {
-      searchQ = e.target.value;
-      render();
-    });
-
+    // Price range slider
     const priceRange = document.getElementById('priceRange');
     const priceLabel = document.getElementById('priceLabel');
     priceRange?.addEventListener('input', e => {
@@ -81,12 +106,39 @@
       render();
     });
 
-    document.querySelectorAll('[data-layout]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        layout = btn.dataset.layout;
-        document.querySelectorAll('[data-layout]').forEach(b => b.classList.toggle('is-active', b.dataset.layout === layout));
-        render();
-      });
+    // Sort Toggle dropdown
+    const sortToggle = document.getElementById('sortToggle');
+    const sortDropdown = document.getElementById('sortDropdown');
+    const sortVal = document.getElementById('sortVal');
+    
+    sortToggle?.addEventListener('click', e => {
+      e.stopPropagation();
+      sortDropdown?.classList.toggle('open');
+    });
+
+    sortDropdown?.addEventListener('click', e => {
+      const opt = e.target.closest('.sort-option');
+      if (!opt) return;
+      currentSort = opt.dataset.sort;
+      if (sortVal) sortVal.textContent = opt.textContent;
+      sortDropdown.querySelectorAll('.sort-option').forEach(o => o.classList.remove('is-active'));
+      opt.classList.add('is-active');
+      sortDropdown.classList.remove('open');
+      render();
+    });
+
+    // Filter Toggle panel
+    const filterToggle = document.getElementById('filterToggle');
+    const filterPanel = document.getElementById('filterPanel');
+    filterToggle?.addEventListener('click', e => {
+      e.stopPropagation();
+      filterPanel?.classList.toggle('open');
+      filterToggle.classList.toggle('is-active');
+    });
+
+    // Click outside to close sort dropdown
+    document.addEventListener('click', () => {
+      sortDropdown?.classList.remove('open');
     });
 
     render();

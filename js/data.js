@@ -66,7 +66,7 @@ const PRODUCTS = [
   { id: 'p3', name: 'Voyager Duffel', cat: 'duffel', catLabel: 'Duffel', price: 6799, was: null,
     img: 'assets/products/p3-navy-voyager-duffel.jpg', img2: 'assets/products/p2-navy-metropolitan-duffel.jpg',
     images: ['assets/products/p3-navy-voyager-duffel.jpg', 'assets/products/p2-navy-metropolitan-duffel.jpg'],
-    badge: null, stars: 4, new: true, bestSelling: false, featured: false,
+    badge: null, stars: 4, new: true, bestSelling: false, featured: true,
     colors: [{ name: 'Navy', hex: '#0b1240' }, { name: 'Sky', hex: '#8fd4ec' }],
     sizes: ['40L', '50L'],
     desc: 'Nautical line-art print across deep navy canvas. Travel duffel for overhead bins and boat decks alike.',
