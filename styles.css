@@ -1059,6 +1059,7 @@ model-viewer#viewer{
 }
 .hero-logo3d:active{ cursor:grabbing }
 .hero-logo3d::part(default-progress-bar){ display:none }
+.hero-logo3d--img{ object-fit:contain; cursor:default; filter:drop-shadow(0 16px 30px rgba(11,18,64,.25)) }
 
 
 /* ---- 3D bag model ---- */

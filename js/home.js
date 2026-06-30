@@ -95,10 +95,39 @@
     });
   }
 
+  /* Hero 3D logo — fall back to a static emblem if WebGL is unavailable
+     (e.g. low-end laptops with HW acceleration off / old Intel drivers) */
+  function initHeroLogo() {
+    const mv = document.getElementById('heroLogo');
+    if (!mv) return;
+    function webglOK() {
+      try {
+        const c = document.createElement('canvas');
+        return !!(window.WebGLRenderingContext &&
+          (c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl')));
+      } catch (e) { return false; }
+    }
+    function fallback() {
+      if (!mv.isConnected || mv.dataset.fallback) return;
+      mv.dataset.fallback = '1';
+      const img = document.createElement('img');
+      img.src = 'assets/brand/logo-emblem-navy.png';
+      img.alt = 'Habäne';
+      img.className = 'hero-logo3d hero-logo3d--img';
+      mv.replaceWith(img);
+    }
+    if (!webglOK()) { fallback(); return; }
+    let loaded = false;
+    mv.addEventListener('load', () => { loaded = true; }, { once: true });
+    mv.addEventListener('error', fallback, { once: true });
+    setTimeout(() => { if (!loaded) fallback(); }, 6000);
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     if (window.gsap && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
     H.initShared();
 
+    initHeroLogo();
     initFeatured();
     initSmartSplit();
     initFaqCarousel();
