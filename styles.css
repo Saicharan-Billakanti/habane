@@ -1470,10 +1470,11 @@ a.contact__card:hover{ transform:translateY(-4px); box-shadow:0 16px 32px rgba(1
 
 /* ---- shop page ---- */
 .shop-container{
-  max-width:var(--maxw); margin:0 auto; padding:0 clamp(1rem,4vw,2.5rem);
+  max-width:none; margin:0; padding:0;
 }
 .shop-header{
   margin-top:3rem; margin-bottom:2.5rem; position:relative; width:100%;
+  padding:0 clamp(1rem,4vw,2.5rem);
 }
 .shop-header__inner{
   max-width:800px; margin-bottom:2.5rem; text-align:left;
