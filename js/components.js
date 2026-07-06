@@ -3,7 +3,7 @@
 (function () {
   const H = window.HABANE;
   H.events = H.events || new EventTarget();
-  const { byId, inr, FREE_SHIP, discountValue, cartQty, cartSubtotal } = H;
+  const { byId, inr, discountValue, cartQty, cartSubtotal } = H;
   const $ = s => document.querySelector(s);
   const $$ = s => [...document.querySelectorAll(s)];
 
@@ -333,14 +333,14 @@
         if (totalRow) totalRow.hidden = true;
       }
 
-      const pct = Math.min(100, Math.round(sub / FREE_SHIP * 100));
+      const pct = Math.min(100, Math.round(sub / H.FREE_SHIP * 100));
       const bar = $('#shipBar');
       if (bar) bar.style.width = pct + '%';
       const msg = $('#shipMsg');
       if (msg) {
-        msg.innerHTML = sub >= FREE_SHIP
+        msg.innerHTML = sub >= H.FREE_SHIP
           ? 'You unlocked <strong>free shipping</strong>'
-          : `Add <strong>${inr(FREE_SHIP - sub)}</strong> more for <strong>free shipping</strong>`;
+          : `Add <strong>${inr(H.FREE_SHIP - sub)}</strong> more for <strong>free shipping</strong>`;
       }
     }
     renderCartRecommend();
@@ -536,6 +536,7 @@
     }
     track.appendChild(span.cloneNode(true));
   }
+  H.fillRibbon = fillRibbon;
   function initRibbon() {
     const tracks = $$('.ribbon__track');
     if (!tracks.length) return;

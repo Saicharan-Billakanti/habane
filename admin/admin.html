@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HABÄNE — Admin Portal</title>
+  <link rel="icon" href="../assets/brand/logo-white.png" />
+  <link rel="stylesheet" href="admin.css">
+  
+  <!-- External Premium Libs -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+  
+  <!-- Seed and Core Router -->
+  <script src="../js/data.js"></script>
+  <script src="seed.js"></script>
+  <script type="module" src="js/dashboard.js"></script>
+</head>
+<body class="admin-body">
+
+  <!-- ==========================================
+       1. GLASSMORPHIC LOGIN SCREEN
+       ========================================== -->
+  <div id="loginWall" class="login-wall">
+    <div class="login-bg-glows">
+      <div class="glow-orb orb-1"></div>
+      <div class="glow-orb orb-2"></div>
+    </div>
+    <div class="login-card">
+      <div class="login-card__brand">
+        <img src="../assets/brand/logo-white.png" alt="Habäne" class="login-logo">
+        <h2>HABÄNE</h2>
+        <p class="login-subtitle">SECURE SYSTEM ADMIN</p>
+      </div>
+      <form id="loginForm" class="login-form">
+        <div class="pin-inputs-wrap">
+          <label for="pinCode" class="pin-label">ENTER ACCESS PIN</label>
+          <div class="pin-fields">
+            <input type="password" maxlength="1" class="pin-digit" pattern="[0-9]" inputmode="numeric" required autofocus>
+            <input type="password" maxlength="1" class="pin-digit" pattern="[0-9]" inputmode="numeric" required disabled>
+            <input type="password" maxlength="1" class="pin-digit" pattern="[0-9]" inputmode="numeric" required disabled>
+            <input type="password" maxlength="1" class="pin-digit" pattern="[0-9]" inputmode="numeric" required disabled>
+          </div>
+          <input type="hidden" id="fullPin" name="pin">
+        </div>
+        
+        <div class="login-actions">
+          <label class="remember-me">
+            <input type="checkbox" id="rememberSession">
+            <span>Remember session</span>
+          </label>
+          <button type="button" class="forgot-pin-btn" id="forgotPinBtn">Forgot PIN?</button>
+        </div>
+
+        <button type="submit" class="login-submit-btn">AUTHORIZE ACCESS</button>
+        
+        <p class="demo-warning">
+          <i data-lucide="shield-alert"></i>
+          Demo Security Only — This dashboard uses client-side session verification. (PIN: 1234)
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       2. DASHBOARD MAIN SHELL (Hidden initially)
+       ========================================== -->
+  <div id="adminShell" class="admin-shell" style="display: none;">
+    <!-- Collapsible Left Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__brand">
+        <img src="../assets/brand/logo-white.png" alt="Habäne Logo">
+        <span class="brand-text">HABÄNE</span>
+        <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Toggle Sidebar">
+          <i data-lucide="chevrons-left"></i>
+        </button>
+      </div>
+
+      <nav class="sidebar__nav">
+        <ul>
+          <li>
+            <a href="#overview" class="nav-item active" data-section="overview">
+              <i data-lucide="layout-dashboard"></i>
+              <span class="nav-text">Overview</span>
+            </a>
+          </li>
+          <li>
+            <a href="#orders" class="nav-item" data-section="orders">
+              <i data-lucide="shopping-cart"></i>
+              <span class="nav-text">Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="#products" class="nav-item" data-section="products">
+              <i data-lucide="luggage"></i>
+              <span class="nav-text">Products</span>
+            </a>
+          </li>
+          <li>
+            <a href="#promotions" class="nav-item" data-section="promotions">
+              <i data-lucide="percent"></i>
+              <span class="nav-text">Promotions</span>
+            </a>
+          </li>
+          <li>
+            <a href="#customers" class="nav-item" data-section="customers">
+              <i data-lucide="users"></i>
+              <span class="nav-text">Customers</span>
+            </a>
+          </li>
+          <li>
+            <a href="#content" class="nav-item" data-section="content">
+              <i data-lucide="file-edit"></i>
+              <span class="nav-text">Content</span>
+            </a>
+          </li>
+          <li>
+            <a href="#settings" class="nav-item" data-section="settings">
+              <i data-lucide="settings-2"></i>
+              <span class="nav-text">Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar__footer">
+        <button class="logout-btn" id="logoutBtn">
+          <i data-lucide="log-out"></i>
+          <span class="nav-text">Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Right Side Dashboard Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Navigation Bar -->
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="mobile-sidebar-toggle" id="mobileSidebarToggle" aria-label="Open Navigation">
+            <i data-lucide="menu"></i>
+          </button>
+          <div class="global-search-container">
+            <div class="search-input-wrapper">
+              <i data-lucide="search" class="search-icon"></i>
+              <input type="text" id="globalSearchInput" placeholder="Instant search orders, products, users, promos..." autocomplete="off">
+              <button class="clear-search-btn" id="clearSearchBtn" style="display:none;"><i data-lucide="x"></i></button>
+            </div>
+            <!-- Search Results Dropdown -->
+            <div class="global-search-dropdown" id="globalSearchDropdown" style="display: none;"></div>
+          </div>
+        </div>
+
+        <div class="topbar__right">
+          <!-- Notification Center -->
+          <div class="notif-wrapper">
+            <button class="topbar-icon-btn" id="notifBellBtn" aria-label="Notifications">
+              <i data-lucide="bell"></i>
+              <span class="badge" id="notifBadge" style="display: none;">0</span>
+            </button>
+            
+            <div class="notif-dropdown" id="notifDropdown" style="display: none;">
+              <div class="notif-header">
+                <h3>Notifications</h3>
+                <button class="notif-clear-all" id="notifClearBtn">Dismiss All</button>
+              </div>
+              <div class="notif-list" id="notifList">
+                <div class="notif-empty">No active notifications</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Widget -->
+          <div class="user-profile-widget">
+            <div class="avatar">HA</div>
+            <div class="user-info">
+              <span class="user-name">Habäne Admin</span>
+              <span class="user-role">Super Admin</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Dynamic Content Area -->
+      <main class="content-container" id="mainContent">
+        <!-- Module content injected here dynamically -->
+        <div class="skeleton-container" id="skeletonLoader">
+          <div class="skeleton-header"></div>
+          <div class="skeleton-grid">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+          <div class="skeleton-table"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div class="admin-toast-container" id="toastContainer"></div>
+
+</body>
+</html>

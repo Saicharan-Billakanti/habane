@@ -185,6 +185,81 @@ const PRODUCTS = [
     smartFeatures: ['water', 'laptop', 'hidden'] },
 ];
 
+// Merge local storage overrides before exposing window.HABANE
+(function mergeOverrides() {
+  try {
+    // 1. Catalog Overrides
+    const catOverrides = JSON.parse(localStorage.getItem('habane_catalog_overrides'));
+    if (catOverrides) {
+      const existingIds = new Set(PRODUCTS.map(p => p.id));
+      Object.entries(catOverrides).forEach(([id, over]) => {
+        if (existingIds.has(id)) {
+          const p = PRODUCTS.find(x => x.id === id);
+          if (p) {
+            Object.assign(p, over);
+            if (over.price !== undefined) p.price = Number(over.price);
+            if (over.was !== undefined) p.was = over.was === null ? null : Number(over.was);
+            if (over.stock !== undefined) p.stock = Number(over.stock);
+            if (over.featured !== undefined) p.featured = over.featured === true || over.featured === 'true';
+            if (over.cat !== undefined) {
+              p.catLabel = over.cat === 'duffel' ? 'Duffel' : 
+                           (over.cat === 'backpack' ? 'Backpack' : 
+                           (over.cat === 'smart' ? 'Smart Series' : over.cat.charAt(0).toUpperCase() + over.cat.slice(1)));
+            }
+          }
+        } else {
+          // Append new admin-created custom products
+          const catLabel = over.cat === 'duffel' ? 'Duffel' : 
+                           (over.cat === 'backpack' ? 'Backpack' : 
+                           (over.cat === 'smart' ? 'Smart Series' : 'Sling'));
+          PRODUCTS.push({
+            id: id,
+            name: over.name || 'New Custom Bag',
+            price: Number(over.price) || 0,
+            was: over.was ? Number(over.was) : null,
+            badge: over.badge || null,
+            stock: over.stock !== undefined ? Number(over.stock) : 10,
+            featured: over.featured === true || over.featured === 'true',
+            cat: over.cat || 'duffel',
+            catLabel: catLabel,
+            img: over.img || 'assets/products/p1-olive-skyline-duffel.jpg',
+            img2: over.img2 || null,
+            images: over.images || ['assets/products/p1-olive-skyline-duffel.jpg'],
+            colors: over.colors || [{ name: 'Midnight', hex: '#0b1240' }],
+            sizes: over.sizes || ['45L'],
+            desc: over.desc || 'Premium custom carry bag.',
+            specs: over.specs || { material: 'Tech Canvas', capacity: '45L', weight: '1.3 kg', warranty: 'Lifetime zipper' },
+            smartFeatures: over.smartFeatures || []
+          });
+        }
+      });
+    }
+
+    // 2. Settings Overrides
+    const settings = JSON.parse(localStorage.getItem('habane_settings'));
+    if (settings && settings.countries) {
+      const updatedCountries = COUNTRIES.map(c => {
+        const cSet = settings.countries[c.code];
+        if (cSet) {
+          return {
+            ...c,
+            currency: cSet.currency ?? c.currency,
+            rate: cSet.rate !== undefined ? Number(cSet.rate) : c.rate,
+            symbol: cSet.symbol ?? c.symbol,
+            enabled: cSet.enabled !== false
+          };
+        }
+        return { ...c, enabled: true };
+      }).filter(c => c.enabled);
+
+      COUNTRIES.length = 0;
+      COUNTRIES.push(...updatedCountries);
+    }
+  } catch (e) {
+    console.error("Error applying Habäne overrides inside data.js:", e);
+  }
+})();
+
 Object.assign(window.HABANE, { FREE_SHIP, PRODUCTS, SMART_FEATURES, FAQ_ITEMS, COUNTRIES,
   byId: id => PRODUCTS.find(p => p.id === id),
   // currency-aware price formatter (converts INR → selected region)
@@ -196,3 +271,12 @@ Object.assign(window.HABANE, { FREE_SHIP, PRODUCTS, SMART_FEATURES, FAQ_ITEMS, C
   },
   stars: n => '★'.repeat(n) + '☆'.repeat(5 - n),
 });
+
+// Dynamic injection of the tracking layer (js/track.js) for storefront pages
+if (typeof document !== 'undefined' && !window.location.pathname.includes('/admin/')) {
+  const trackScript = document.createElement('script');
+  trackScript.src = 'js/track.js';
+  trackScript.defer = true;
+  document.head.appendChild(trackScript);
+}
+
