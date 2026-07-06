@@ -101,12 +101,13 @@ em{font-style:normal}
 
 /* ===================== RIBBON (below nav) ===================== */
 .ribbon{
-  background:var(--navy-deep);
+  background:linear-gradient(180deg,var(--navy) 0%, var(--navy-2) 100%);
   color:#c2cbe9;
   overflow:hidden;
   border-bottom:1px solid rgba(255,255,255,.06);
   position:relative;
   z-index:40;
+  margin-top:.6rem;
 }
 .ribbon__track{
   display:flex; width:max-content; gap:0;
@@ -114,7 +115,7 @@ em{font-style:normal}
 }
 .ribbon__track span{
   font-family:"Montserrat",sans-serif;
-  font-size:.65rem; letter-spacing:.1em; font-weight:500;
+  font-size:.85rem; letter-spacing:.1em; font-weight:500;
   padding:.4rem 0; white-space:nowrap;
 }
 @keyframes ribbon{ from{transform:translateX(0)} to{transform:translateX(-50%)} }
@@ -138,7 +139,7 @@ em{font-style:normal}
 .nav__links--left{ gap:1.7rem }
 .nav__links--right{ justify-content:flex-end; gap:1.3rem }
 .nav__links a{
-  font-size:.95rem; font-weight:500; letter-spacing:.04em;
+  font-size:.82rem; font-weight:500; letter-spacing:.04em;
   position:relative; padding:.2rem 0; color:#fff;
   transition:color .25s, opacity .25s;
 }
