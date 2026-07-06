@@ -27,7 +27,7 @@
     <nav class="nav__links nav__links--left">
       <a href="shop.html" class="nav__shop">Shop</a>
       <a href="smart-series.html">Smart Series</a>
-      <a href="showroom.html">Enter World ✦</a>
+      <a href="showroom.html" class="nav__world">Enter World ✦</a>
       <a href="#lookbook">Lookbook</a>
       <a href="#story">Story</a>
     </nav>
@@ -76,15 +76,43 @@
 
   <main id="top">
 
-    <section class="hero-banner">
-      <img class="hero-banner__img" src="assets/brand/engineered-banner.jpg" alt="Habäne — engineered to the last detail" />
-      <div class="hero-banner__glow"></div>
-      <model-viewer id="heroLogo" class="hero-banner__logo"
-        src="assets/3d/logo.glb" alt="Habäne 3D logo — drag to rotate"
-        camera-controls auto-rotate auto-rotate-delay="0" rotation-per-second="26deg"
-        interaction-prompt="none" exposure="1.15" shadow-intensity="0.7" shadow-softness="1"
-        environment-image="neutral" camera-orbit="0deg 78deg 105%" disable-zoom
-        touch-action="pan-y" poster="assets/brand/logo-emblem-navy.png"></model-viewer>
+    <section class="hero">
+      <div class="hero__glow"></div>
+      <div class="hero__layout">
+        <div class="hero__inner">
+          <p class="hero__eyebrow">EST. — CARRY THE CITY</p>
+          <h1 class="hero__title">
+            <span>BAGS THAT</span>
+            <span class="hero__title--metal">MOVE LIKE YOU.</span>
+          </h1>
+          <p class="hero__sub">Smart duffels, weekenders &amp; backpacks engineered in metallic silver and midnight navy. Built for the people who never really unpack.</p>
+          <div class="hero__cta">
+            <a href="shop.html" class="spin-btn">
+              <span class="spin-btn__fill"></span>
+              <span class="spin-btn__label">SHOP NOW</span>
+              <span class="spin-btn__ring">
+                <svg viewBox="0 0 100 100">
+                  <text><textPath href="#circlePath">HABÄNE • CARRY THE CITY • HABÄNE • CARRY THE CITY • </textPath></text>
+                </svg>
+              </span>
+              <span class="spin-btn__arrow">↗</span>
+            </a>
+            <a href="smart-series.html" class="ghost-btn">
+              <span>Meet the Smart Duffel</span>
+              <i>→</i>
+            </a>
+          </div>
+        </div>
+        <div class="hero__bag-3d-wrap">
+          <div class="hero__bag-glow"></div>
+          <model-viewer id="heroLogo"
+            src="assets/3d/logo.glb" alt="Habäne 3D logo — drag to rotate"
+            camera-controls auto-rotate auto-rotate-delay="0" rotation-per-second="26deg"
+            interaction-prompt="none" exposure="1.15" shadow-intensity="0.7" shadow-softness="1"
+            environment-image="neutral" camera-orbit="0deg 78deg 105%" disable-zoom
+            touch-action="pan-y" poster="assets/brand/logo-emblem-navy.png"></model-viewer>
+        </div>
+      </div>
     </section>
 
     <section class="featured featured--carousel" id="shop">

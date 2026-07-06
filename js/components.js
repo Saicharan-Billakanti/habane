@@ -519,7 +519,7 @@
   };
 
   /* ---- Ribbon / marquee (seamless, gap-proof) ---- */
-  const RIBBON_PHRASE = 'FREE SHIPPING OVER ₹4,999  ·  LIFETIME ZIPPER WARRANTY  ·  7-DAY EASY RETURNS  ·  COD AVAILABLE NATIONWIDE  ·  CARRY THE CITY  ·  ';
+  const RIBBON_PHRASE = 'FREE SHIPPING ON EVERYTHING ✦    SMART DUFFELS — NOW LIVE ✦    CARRY THE CITY ✦    LIFETIME ZIPPER WARRANTY ✦    NEW DROP: METROPOLITAN SERIES ✦    ';
   function fillRibbon(track) {
     const phrase = track.dataset.phrase || RIBBON_PHRASE;
     const span = document.createElement('span');
@@ -548,49 +548,51 @@
     });
   }
 
-  /* ---- Rayred-style footer (all pages) ---- */
+  /* ---- Gen-z "Carry the City" footer (all pages) ---- */
   function initFooter() {
     const foot = document.querySelector('.foot');
     if (!foot) return;
-    foot.classList.add('foot--rr');
+    const isHome = document.body.dataset.page === 'home';
+    const lookbookHref = isHome ? '#lookbook' : 'index.html#lookbook';
+    const storyHref = isHome ? '#story' : 'index.html#story';
     foot.innerHTML = `
-      <div class="foot-rr">
-        <div class="foot-rr__brand">
-          <img src="assets/brand/wordmark-silver.png" alt="Habäne" class="foot-rr__word">
-        </div>
-        <div class="foot-rr__right">
-          <div class="foot-rr__acc">
-            <details class="foot-acc"><summary>RETURN POLICY</summary><p>7-day easy returns. If it's not giving what you wanted, send it back for a refund or exchange.</p></details>
-            <details class="foot-acc"><summary>SHIPPING</summary><p>Free shipping over ₹4,999. Metro cities 2–4 days, rest of India 4–7. COD available nationwide.</p></details>
-            <details class="foot-acc"><summary>WARRANTY</summary><p>Lifetime zipper warranty, reinforced stitching and water-repellent canvas on every carry.</p></details>
-          </div>
-          <div class="foot-rr__cols">
-            <div class="foot-rr__col">
-              <h4>HELP</h4>
-              <a href="#">Track Your Order</a>
-              <a href="#">Returns &amp; Exchange</a>
-            </div>
-            <div class="foot-rr__col">
-              <h4>ABOUT US</h4>
-              <a href="about.html">Our Story</a>
-              <a href="contact.html">Contact Us</a>
-            </div>
-            <div class="foot-rr__col">
-              <h4>SHOP</h4>
-              <a href="shop.html">All Products</a>
-              <a href="smart-series.html">Smart Series</a>
-            </div>
+      <div class="foot__top">
+        <div class="foot__brand">
+          <img src="assets/brand/wordmark-silver.png" alt="Habäne" class="foot__word" />
+          <p class="foot__tag">Carry the city. Leave the baggage.</p>
+          <div class="foot__social">
+            <a href="#">IG</a><a href="#">TT</a><a href="#">YT</a><a href="#">X</a>
           </div>
         </div>
+        <div class="foot__col">
+          <h4>The Goods</h4>
+          <a href="shop.html?cat=duffel">Duffels</a>
+          <a href="shop.html?cat=backpack">Backpacks</a>
+          <a href="smart-series.html">Smart Series</a>
+          <a href="shop.html?cat=sling">Slings</a>
+        </div>
+        <div class="foot__col">
+          <h4>Lowkey Iconic</h4>
+          <a href="${lookbookHref}">Lookbook</a>
+          <a href="${storyHref}">Our Lore</a>
+          <a href="#">The Drop List</a>
+          <a href="#">Gift Cards fr</a>
+        </div>
+        <div class="foot__col foot__col--boring">
+          <h4>Boring Stuff 🥱</h4>
+          <a href="#">Shipping &amp; whatnot</a>
+          <a href="#">Returns (it's giving easy)</a>
+          <a href="#">Privacy, ig</a>
+          <a href="#">Terms &amp; conditions 💤</a>
+          <a href="contact.html">Adulting (Contact us)</a>
+        </div>
       </div>
-      <div class="foot-rr__social">
-        <a href="#" aria-label="Facebook">${icon('facebook')}</a>
-        <a href="#" aria-label="Instagram">${icon('instagram')}</a>
-        <a href="#" aria-label="YouTube">${icon('youtube')}</a>
-        <a href="#" aria-label="Twitter">${icon('twitter')}</a>
-      </div>
-      <div class="foot-rr__copy">© <span id="yr"></span> Habäne</div>`;
-    refreshIcons(foot);
+      <div class="foot__bottom">
+        <p>© <span id="yr"></span> Habäne. All rights reserved. No cap.</p>
+        <p class="foot__vibe">Made with chaotic good energy ✦ Carry the city</p>
+      </div>`;
+    const yr = foot.querySelector('#yr');
+    if (yr) yr.textContent = new Date().getFullYear();
   }
 
   /* ---- Floating 3D Showroom button (bottom-right) ---- */
