@@ -25,11 +25,11 @@
     </button>
 
     <nav class="nav__links nav__links--left">
-      <a href="index.html">Home</a>
-      <a href="shop.html" class="nav__shop">Shop All</a>
+      <a href="shop.html" class="nav__shop">Shop</a>
       <a href="smart-series.html">Smart Series</a>
-      <a href="about.html">About Us</a>
-      <a href="contact.html">Contact</a>
+      <a href="showroom.html">Enter World ✦</a>
+      <a href="#lookbook">Lookbook</a>
+      <a href="#story">Story</a>
     </nav>
 
     <a class="nav__logo" href="index.html">
@@ -66,12 +66,11 @@
   </div>
 
   <div class="drawer" id="drawer">
-    <a href="index.html">Home</a>
-    <a href="shop.html">Shop All</a>
+    <a href="shop.html">Shop</a>
     <a href="smart-series.html">Smart Series</a>
-      <a href="about.html">About Us</a>
-    <a href="showroom.html">3D Showroom</a>
-    <a href="contact.html">Contact</a>
+    <a href="showroom.html">Enter World ✦</a>
+    <a href="#lookbook">Lookbook</a>
+    <a href="#story">Story</a>
     <a href="#" class="drawer__cart" id="drawerCartLink">Cart (<span class="drawer-cart-count">0</span>)</a>
   </div>
 
@@ -124,6 +123,32 @@
       </div>
     </div>
 
+    <!-- ============ LOOKBOOK ============ -->
+    <section class="look" id="lookbook">
+      <div class="look__head">
+        <h2 class="section-title">THE LOOKBOOK</h2>
+        <p class="section-sub">Skylines you can sling over your shoulder.</p>
+      </div>
+      <div class="look__grid">
+        <figure class="look__item look__item--tall">
+          <img src="assets/products/p2-navy-metropolitan-duffel.jpg" alt="Metropolitan duffel" />
+          <figcaption>Metropolitan — Navy</figcaption>
+        </figure>
+        <figure class="look__item">
+          <img src="assets/products/p1-olive-skyline-duffel.jpg" alt="Olive skyline duffel" />
+          <figcaption>Skyline — Olive</figcaption>
+        </figure>
+        <figure class="look__item">
+          <img src="assets/products/p3-navy-voyager-duffel.jpg" alt="Voyager duffel" />
+          <figcaption>Voyager — Navy</figcaption>
+        </figure>
+        <figure class="look__item look__item--wide">
+          <img src="assets/products/p5-steel-blue-weekender.jpg" alt="Steel blue weekender" />
+          <figcaption>Weekender — Steel Blue</figcaption>
+        </figure>
+      </div>
+    </section>
+
     <section class="story" id="story">
       <div class="story__inner">
         <h2 class="story__title">We make bags for people who<br><span>can't sit still.</span></h2>
@@ -136,6 +161,22 @@
       </div>
     </section>
 
+    <!-- ============ UGC / INSTA WALL ============ -->
+    <section class="ugc" id="ugc">
+      <div class="ugc__head">
+        <h2 class="section-title">#CARRYTHECITY</h2>
+        <p class="section-sub">Tag <strong>@habane</strong> — you might just end up here. main character energy only. ✦</p>
+      </div>
+      <div class="ugc__grid">
+        <a class="ugc__item" href="#"><img src="assets/products/p1-olive-skyline-duffel.jpg" alt=""><span class="ugc__tag">@cityrat.exe</span><span class="ugc__heart">♥ 2.4k</span></a>
+        <a class="ugc__item" href="#"><img src="assets/products/alt-black-backpack.jpg" alt=""><span class="ugc__tag">@notyouravg</span><span class="ugc__heart">♥ 1.1k</span></a>
+        <a class="ugc__item" href="#"><img src="assets/products/p2-navy-metropolitan-duffel.jpg" alt=""><span class="ugc__tag">@onmyway</span><span class="ugc__heart">♥ 3.8k</span></a>
+        <a class="ugc__item" href="#"><img src="assets/products/p8-grey-sling.jpg" alt=""><span class="ugc__tag">@lowkey.iconic</span><span class="ugc__heart">♥ 980</span></a>
+        <a class="ugc__item" href="#"><img src="assets/products/alt-white-duffel.jpg" alt=""><span class="ugc__tag">@packlight</span><span class="ugc__heart">♥ 5.2k</span></a>
+        <a class="ugc__item" href="#"><img src="assets/products/p7-heritage-backpack.jpg" alt=""><span class="ugc__tag">@touchgrass</span><span class="ugc__heart">♥ 1.7k</span></a>
+      </div>
+    </section>
+
     <div class="strip" aria-hidden="true">
       <div class="strip__track">
         <span>CARRY THE CITY · MIDNIGHT NAVY · METALLIC SILVER · SMART INSIDE · CARRY THE CITY · MIDNIGHT NAVY · METALLIC SILVER · SMART INSIDE · </span>
@@ -145,8 +186,8 @@
 
     <section class="faq-carousel" id="faq">
       <div class="faq-carousel__head">
-        <h2 class="section-title">WHAT THEY'RE ASKING</h2>
-        <p class="section-sub">Real questions. Straight answers.</p>
+        <h2 class="section-title">THE TEA ☕</h2>
+        <p class="section-sub">aka the questions everyone slides into our DMs about.</p>
       </div>
       <div class="faq-carousel__viewport">
         <button type="button" class="carousel-btn carousel-btn--prev" id="faqPrev" aria-label="Previous"><i data-lucide="chevron-left"></i></button>
@@ -267,6 +308,42 @@
       <button class="done__btn" data-done-close type="button">KEEP SHOPPING</button>
     </div>
   </div>
+
+  <!-- ============ SPIN TO WIN (discount) ============ -->
+  <div class="wheel" id="wheel" aria-hidden="true">
+    <div class="wheel__overlay" data-wheel-close></div>
+    <div class="wheel__panel" role="dialog" aria-modal="true">
+      <button class="wheel__close" data-wheel-close type="button" aria-label="Close">✕</button>
+      <div class="wheel__left">
+        <p class="wheel__eyebrow">NO CAP, FREE MONEY</p>
+        <h3 class="wheel__title">Spin for a<br><span>discount 🎰</span></h3>
+        <p class="wheel__sub">One spin per main character. Drop your email, spin the wheel, and we'll auto-apply whatever you land on at checkout.</p>
+        <form id="wheelForm" class="wheel__form">
+          <input type="email" id="wheelEmail" placeholder="your@email.here" required />
+          <button type="submit" class="wheel__spin" id="wheelSpin">SPIN IT ✦</button>
+        </form>
+        <p class="wheel__skip" data-wheel-close>nah, i hate saving money →</p>
+        <p class="wheel__result" id="wheelResult"></p>
+      </div>
+      <div class="wheel__right">
+        <div class="wheel__wrap">
+          <div class="wheel__pointer">▼</div>
+          <div class="wheel__disc" id="wheelDisc">
+            <span style="--i:0">10% OFF</span>
+            <span style="--i:1">FREE SHIP</span>
+            <span style="--i:2">5% OFF</span>
+            <span style="--i:3">15% OFF</span>
+            <span style="--i:4">TRY AGAIN</span>
+            <span style="--i:5">20% OFF</span>
+          </div>
+          <div class="wheel__hub">✦</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- floating spin-to-win button -->
+  <button class="spin-fab" id="spinFab" type="button">🎰 <span>Spin&nbsp;to&nbsp;win</span></button>
 
   <div class="toast" id="toast"></div>
 

@@ -20,11 +20,11 @@ const SMART_FEATURES = [
 ];
 
 const FAQ_ITEMS = [
-  { q: 'Is the Smart Duffel actually smart?', a: 'Yes — integrated 10,000mAh fast-charge core, RGB trim lighting, device check-in panel and water-repellent tech canvas. Engineered, not just styled.', img: 'assets/products/p4-smart-duffel-ivory.jpg', tag: 'SMART SERIES' },
-  { q: 'How fast is shipping?', a: 'Metro cities 2–4 business days, rest of India 4–7. Free shipping over ₹4,999 with tracking from dispatch.', img: 'assets/products/p2-navy-metropolitan-duffel.jpg', tag: 'SHIPPING' },
-  { q: 'What if it does not meet expectations?', a: '7-day easy returns. Full refund or exchange — no drama. We want you to love your carry.', img: 'assets/products/p1-olive-skyline-duffel.jpg', tag: 'RETURNS' },
-  { q: 'How durable are Habäne bags?', a: 'Lifetime zipper warranty, reinforced stitching and water-repellent canvas. Built for years of daily use.', img: 'assets/products/p7-heritage-backpack.jpg', tag: 'QUALITY' },
-  { q: 'Do you offer Cash on Delivery?', a: 'COD available nationwide. Pay when your order arrives at your door.', img: 'assets/products/p5-steel-blue-weekender.jpg', tag: 'PAYMENTS' },
+  { q: 'Is the smart duffel actually smart or is it just vibes?', a: 'Genuinely smart. 10,000mAh fast-charge core, RGB trim and a device check-in panel. The vibes are just a bonus. ⚡', img: 'assets/products/p4-smart-duffel-ivory.jpg', tag: 'SMART SERIES' },
+  { q: "How fast is shipping? I'm impatient", a: "Same, valid. Metro cities 2–4 days, rest of India 4–7. Free over ₹4,999, and you'll get tracking the second it ships. 🚚", img: 'assets/products/p2-navy-metropolitan-duffel.jpg', tag: 'SHIPPING' },
+  { q: "What if it doesn't hit the same in person?", a: "7-day no-drama returns. If it's not giving what you wanted, send it back. Refund or swap, your call. ↩️", img: 'assets/products/p1-olive-skyline-duffel.jpg', tag: 'RETURNS' },
+  { q: 'Are these gonna fall apart in a month?', a: 'Absolutely not. Lifetime zipper warranty, reinforced stitching, water-repellent canvas. Built to outlive your situationships. ♾️', img: 'assets/products/p7-heritage-backpack.jpg', tag: 'QUALITY' },
+  { q: "Do you do COD? I don't trust the internet", a: 'Yep, cash on delivery available nationwide. Pay when it physically lands in your hands. 💸', img: 'assets/products/p5-steel-blue-weekender.jpg', tag: 'PAYMENTS' },
 ];
 
 // rate = target currency per 1 INR (approx, for on-site price conversion)

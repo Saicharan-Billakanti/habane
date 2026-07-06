@@ -86,6 +86,73 @@
     H.refreshIcons(track);
   }
 
+  /* Spin-to-win discount wheel — floating FAB opens a modal wheel that
+     auto-applies a promo code via H.promoData, same as a manually-entered code. */
+  function initSpinWheel() {
+    const wheel = document.getElementById('wheel');
+    const disc = document.getElementById('wheelDisc');
+    const fab = document.getElementById('spinFab');
+    if (!wheel || !fab) return;
+
+    // segment order must match the DOM order in #wheelDisc
+    const REWARDS = [
+      { label: '10% OFF', code: 'HABÄNE10', type: 'pct', value: 10 },
+      { label: 'FREE SHIP', code: 'FREESHIP', type: 'ship', value: 0 },
+      { label: '5% OFF', code: 'HABÄNE5', type: 'pct', value: 5 },
+      { label: '15% OFF', code: 'HABÄNE15', type: 'pct', value: 15 },
+      { label: 'TRY AGAIN', code: null, type: 'none', value: 0 },
+      { label: '20% OFF', code: 'HABÄNE20', type: 'pct', value: 20 },
+    ];
+    // weighted winners (rigged for conversion — never lands on TRY AGAIN)
+    const WEIGHTS = [[0, 38], [3, 30], [2, 14], [5, 10], [1, 8]];
+    function pickWinner() {
+      const total = WEIGHTS.reduce((s, w) => s + w[1], 0);
+      let r = Math.random() * total;
+      for (const [seg, w] of WEIGHTS) { if ((r -= w) <= 0) return seg; }
+      return 0;
+    }
+
+    let spun = false;
+    function openWheel() { if (H.promoData) return; H.openModal(wheel); }
+    function close() { H.closeModal(wheel); }
+    wheel.addEventListener('click', e => { if (e.target.closest('[data-wheel-close]')) close(); });
+
+    document.getElementById('wheelForm')?.addEventListener('submit', e => {
+      e.preventDefault();
+      if (spun) return;
+      spun = true;
+      const seg = pickWinner();
+      const turns = 5; // full spins for drama
+      const target = turns * 360 + (360 - (seg * 60 + 30)); // center segment under the top pointer
+      disc.style.transition = 'transform 4.4s cubic-bezier(.15,.9,.25,1)';
+      disc.style.transform = `rotate(${target}deg)`;
+      const spinBtn = document.getElementById('wheelSpin');
+      spinBtn.disabled = true; spinBtn.textContent = 'spinning…';
+
+      setTimeout(() => {
+        const reward = REWARDS[seg];
+        if (reward.type !== 'none') {
+          H.promoData = { code: reward.code, type: reward.type, value: reward.value };
+          H.syncCart();
+        }
+        const msg = reward.type === 'pct' ? `YESSS — <strong>${reward.value}% OFF</strong> unlocked. Code <strong>${reward.code}</strong> auto-applies at checkout. 💅`
+          : reward.type === 'ship' ? `<strong>FREE SHIPPING</strong> unlocked, code <strong>${reward.code}</strong> is in your cart. 🚚`
+          : `so close 😭 try again later.`;
+        document.getElementById('wheelResult').innerHTML = msg;
+        H.toast(reward.type !== 'none' ? `Discount unlocked — ${reward.label} ✦` : 'almost! 😭');
+        setTimeout(close, 2600);
+      }, 4500);
+    });
+
+    function updateFab() { fab.style.display = H.promoData ? 'none' : 'flex'; }
+    fab.addEventListener('click', openWheel);
+    updateFab();
+    if (!H.promoData && !sessionStorage.getItem('wheelSeen')) {
+      sessionStorage.setItem('wheelSeen', '1');
+      setTimeout(openWheel, 6500);
+    }
+  }
+
   function initNewsletter() {
     document.getElementById('newsForm')?.addEventListener('submit', e => {
       e.preventDefault();
@@ -132,6 +199,7 @@
     initSmartSplit();
     initFaqCarousel();
     initNewsletter();
+    initSpinWheel();
     if (window.gsap) {
       gsap.from('.hero__inner > *', { y: 30, opacity: 0, duration: 0.8, stagger: 0.12, ease: 'power3.out', delay: 0.2 });
     }

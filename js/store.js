@@ -97,13 +97,21 @@
 
   Object.assign(H, {
     cart, wish, promo,
-    get cartData() { return cart; },
-    get wishData() { return wish; },
-    get promoData() { return promo; },
-    set promoData(v) { promo = v; save(); },
     discountValue, cartQty, cartSubtotal,
     addToCart, changeQty, removeItem, clearCart,
     toggleWish, isWish, setLocation, getLocation, save,
     getUser, setUser, logout,
+  });
+
+  // defineProperties (not object-literal getters via Object.assign, which
+  // flattens accessors into plain snapshot values) so these stay live.
+  Object.defineProperties(H, {
+    cartData: { get: () => cart, configurable: true },
+    wishData: { get: () => wish, configurable: true },
+    promoData: {
+      get: () => promo,
+      set: v => { promo = v; save(); },
+      configurable: true,
+    },
   });
 })();
