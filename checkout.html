@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Checkout — HABÄNE</title>
+  <title>Express Checkout — HABÄNE</title>
   <link rel="icon" href="assets/brand/logo-white.png" />
   <link rel="stylesheet" href="styles.css" />
   <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js" defer></script>
@@ -17,45 +17,113 @@
     </nav>
   </header>
 
-  <main class="checkout-page">
-    <h1 class="section-title">CHECKOUT</h1>
-    <div class="checkout-page__grid">
-      <form class="checkout-form" id="coForm">
-        <section class="checkout-form__block">
-          <h3><i data-lucide="map-pin"></i> Shipping</h3>
-          <div class="checkout-form__row">
-            <input type="text" placeholder="First name" required>
-            <input type="text" placeholder="Last name" required>
+  <main class="xco">
+    <div class="xco__head">
+      <h1 class="xco__title">EXPRESS CHECKOUT<span class="xco__bolt">⚡</span></h1>
+      <p class="xco__timer"><i data-lucide="timer"></i> Most people finish this page in under a minute.</p>
+    </div>
+
+    <div class="xco__grid">
+      <form class="xco__form" id="coForm" novalidate>
+
+        <p class="xco__welcome" id="coWelcome" hidden><i data-lucide="sparkles"></i> Welcome back — we filled in your details. Just pick how to pay.</p>
+
+        <section class="xco__block">
+          <h3 class="xco__block-title"><span class="xco__step">1</span> Where's it going?</h3>
+          <div class="xco__row">
+            <div class="xco__field">
+              <input type="text" id="coName" placeholder=" " autocomplete="name" required>
+              <label for="coName">Full name</label>
+            </div>
+            <div class="xco__field">
+              <input type="tel" id="coPhone" placeholder=" " autocomplete="tel" inputmode="numeric" required>
+              <label for="coPhone">Phone</label>
+            </div>
           </div>
-          <input type="email" placeholder="Email" required>
-          <input type="tel" placeholder="Phone" required>
-          <input type="text" placeholder="Address" required>
-          <div class="checkout-form__row">
-            <input type="text" placeholder="City" required>
-            <input type="text" placeholder="PIN code" required>
+          <div class="xco__field">
+            <input type="text" id="coAddr" placeholder=" " autocomplete="street-address" required>
+            <label for="coAddr">Address — flat, street, landmark</label>
+          </div>
+          <div class="xco__row">
+            <div class="xco__field">
+              <input type="text" id="coPin" placeholder=" " autocomplete="postal-code" inputmode="numeric" maxlength="6" required>
+              <label for="coPin">PIN code</label>
+            </div>
+            <div class="xco__field">
+              <input type="text" id="coCity" placeholder=" " autocomplete="address-level2" required>
+              <label for="coCity">City</label>
+            </div>
           </div>
         </section>
-        <section class="checkout-form__block">
-          <h3><i data-lucide="credit-card"></i> Payment</h3>
-          <input type="text" placeholder="Card number" required>
-          <div class="checkout-form__row">
-            <input type="text" placeholder="MM / YY" required>
-            <input type="text" placeholder="CVV" required>
+
+        <section class="xco__block">
+          <h3 class="xco__block-title"><span class="xco__step">2</span> How do you want to pay?</h3>
+          <div class="xco__pays" id="coPays" role="tablist">
+            <button type="button" class="xco__pay is-on" data-pay="upi">
+              <i data-lucide="smartphone"></i><strong>UPI</strong><span>fastest ⚡</span>
+            </button>
+            <button type="button" class="xco__pay" data-pay="cod">
+              <i data-lucide="banknote"></i><strong>Cash on Delivery</strong><span>zero typing</span>
+            </button>
+            <button type="button" class="xco__pay" data-pay="card">
+              <i data-lucide="credit-card"></i><strong>Card</strong><span>debit / credit</span>
+            </button>
           </div>
-          <p class="checkout-form__note">This is a demo checkout — no payment will be processed.</p>
+
+          <div class="xco__paybody" data-paybody="upi">
+            <div class="xco__field">
+              <input type="text" id="coUpi" placeholder=" " autocomplete="off">
+              <label for="coUpi">UPI ID — yourname@upi</label>
+            </div>
+            <p class="xco__hint">A payment request lands on your UPI app. Approve, done.</p>
+          </div>
+          <div class="xco__paybody" data-paybody="cod" hidden>
+            <p class="xco__hint">Nothing to fill. Pay when the bag is physically in your hands. 💸</p>
+          </div>
+          <div class="xco__paybody" data-paybody="card" hidden>
+            <div class="xco__field">
+              <input type="text" id="coCard" placeholder=" " autocomplete="cc-number" inputmode="numeric">
+              <label for="coCard">Card number</label>
+            </div>
+            <div class="xco__row">
+              <div class="xco__field">
+                <input type="text" id="coExp" placeholder=" " autocomplete="cc-exp" maxlength="7">
+                <label for="coExp">MM / YY</label>
+              </div>
+              <div class="xco__field">
+                <input type="password" id="coCvv" placeholder=" " autocomplete="cc-csc" maxlength="4" inputmode="numeric">
+                <label for="coCvv">CVV</label>
+              </div>
+            </div>
+          </div>
+
+          <p class="xco__note">Demo checkout — no real payment is processed.</p>
         </section>
-        <button type="submit" class="checkout-form__submit">PLACE ORDER</button>
+
+        <div class="xco__paybar">
+          <button type="submit" class="xco__submit" id="coSubmit">
+            <span class="xco__submit-label" id="coSubmitLabel">PAY ₹0 · UPI</span>
+            <span class="xco__submit-arrow">→</span>
+          </button>
+          <div class="xco__trust">
+            <span><i data-lucide="shield-check"></i> 256-bit secure</span>
+            <span><i data-lucide="truck"></i> 2–4 day metro delivery</span>
+            <span><i data-lucide="rotate-ccw"></i> 7-day no-drama returns</span>
+          </div>
+        </div>
       </form>
 
-      <aside class="checkout-summary">
-        <h3>Order Summary</h3>
-        <div id="coEmpty" hidden><p>Your cart is empty. <a href="shop.html">Shop now</a></p></div>
+      <aside class="xco__summary">
+        <h3>Your Bag</h3>
+        <div id="coEmpty" hidden><p>Your bag is empty. <a href="shop.html">Fix that →</a></p></div>
         <div id="coItems"></div>
-        <div class="checkout-summary__rows">
+        <div class="xco__rows">
           <div class="cart__row"><span>Subtotal</span><strong id="coSubtotal">₹0</strong></div>
           <div class="cart__row cart__row--disc" id="coDiscRow" hidden><span>Discount</span><strong id="coDisc">−₹0</strong></div>
+          <div class="cart__row"><span>Shipping</span><strong class="xco__free">FREE</strong></div>
           <div class="cart__row cart__row--total"><span>Total</span><strong id="coTotal">₹0</strong></div>
         </div>
+        <p class="xco__seal">✦ Every Habäne ships with a lifetime zipper warranty.</p>
       </aside>
     </div>
   </main>

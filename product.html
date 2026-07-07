@@ -48,33 +48,55 @@
     <a href="#" class="drawer__cart" id="drawerCartLink">Cart (<span class="drawer-cart-count">0</span>)</a>
   </div>
 
-  <main class="pd">
+  <main class="pd pd--paper">
     <nav class="pd__crumb"><a href="index.html">Home</a> / <a href="shop.html">Shop</a> / <span id="pdNameCrumb">Product</span></nav>
-    <div class="pd__grid">
-      <div class="pd__gallery">
-        <div class="pd__main">
-          <img id="pdMainImg" src="" alt="">
-          <span class="pd__badge" id="pdBadge"></span>
-        </div>
+
+    <div class="spread">
+      <!-- left: editorial headline column -->
+      <div class="spread__left">
+        <span class="pd__cat" id="pdCat"></span>
+        <h1 class="spread__title" id="pdName"></h1>
+        <p class="pd__tagline" id="pdTagline"><mark class="hl">Carry stories, not stuff.</mark></p>
+        <p class="spread__desc" id="pdDesc"></p>
+        <ul class="spread__trust">
+          <li><i data-lucide="droplets"></i><span>WATER<br>REPELLENT</span></li>
+          <li><i data-lucide="award"></i><span>PREMIUM<br>HARDWARE</span></li>
+          <li><i data-lucide="shield-check"></i><span>LIFETIME<br>ZIPPERS</span></li>
+        </ul>
+        <figure class="polaroid polaroid--person">
+          <img id="pdPolaroid1" src="" alt="">
+        </figure>
+      </div>
+
+      <!-- centre: the stage -->
+      <div class="spread__stage">
+        <span class="doodle doodle--star" aria-hidden="true">✳</span>
+        <span class="doodle doodle--spark" aria-hidden="true">✦</span>
+        <span class="spread__note" id="pdNote" aria-hidden="true">built for<br>escapes</span>
+        <figure class="polaroid polaroid--city">
+          <img id="pdPolaroid2" src="" alt="">
+        </figure>
+        <img class="spread__img" id="pdMainImg" src="" alt="">
+        <div class="spread__floor" aria-hidden="true"></div>
         <div class="pd__thumbs" id="pdThumbs"></div>
       </div>
-      <div class="pd__info">
-        <span class="pd__cat" id="pdCat"></span>
-        <h1 class="pd__name" id="pdName"></h1>
+
+      <!-- right: buy card -->
+      <aside class="buycard">
+        <span class="buycard__badge pd__badge" id="pdBadge"></span>
         <div class="pd__rate"><span class="pd__stars" id="pdStars"></span></div>
         <div class="pd__price" id="pdPrice"></div>
-        <p class="pd__desc" id="pdDesc"></p>
 
         <div class="pd__block">
           <span class="pd__label">Colour: <em id="pdColorName"></em></span>
           <div class="pd__colors" id="pdColors"></div>
         </div>
         <div class="pd__block">
-          <span class="pd__label">Size</span>
+          <span class="pd__label pd__label--row">Size <a class="pd__sizeguide" href="#pdSpecs"><i data-lucide="pencil-ruler"></i> Size guide</a></span>
           <div class="pd__sizes" id="pdSizes"></div>
         </div>
         <div class="pd__block">
-          <span class="pd__label">Quantity</span>
+          <span class="pd__label">Qty</span>
           <div class="pd__qty">
             <button data-step="-1" type="button" aria-label="Decrease"><i data-lucide="minus"></i></button>
             <span id="pdQty">1</span>
@@ -83,19 +105,21 @@
         </div>
 
         <div class="pd__actions">
-          <button class="pd__add" id="pdAdd" type="button">ADD TO CART</button>
+          <button class="pd__add" id="pdAdd" type="button">ADD TO CART <span class="pd__add-arrow">→</span></button>
+          <button class="pd__buy" id="pdBuy" type="button">BUY NOW ⚡ SKIP THE CART</button>
           <button class="pd__wish" id="pdWish" type="button">Wishlist</button>
-          <button class="pd__buy" id="pdBuy" type="button">BUY NOW</button>
         </div>
+      </aside>
+    </div>
 
-        <div class="pd__section">
-          <h3>Specifications</h3>
-          <div class="pd__specs" id="pdSpecs"></div>
-        </div>
-        <div class="pd__section">
-          <h3>Smart Features</h3>
-          <div class="pd__feats" id="pdSmartFeats"></div>
-        </div>
+    <div class="pd__lower">
+      <div class="pd__section">
+        <h3>Specifications</h3>
+        <div class="pd__specs" id="pdSpecs"></div>
+      </div>
+      <div class="pd__section">
+        <h3>Smart Features</h3>
+        <div class="pd__feats" id="pdSmartFeats"></div>
       </div>
     </div>
 

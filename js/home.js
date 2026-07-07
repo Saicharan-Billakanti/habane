@@ -3,28 +3,52 @@
 (function () {
   const H = window.HABANE;
 
+  /* Product wall: category tabs, no hover needed, 8+ products in view */
   function initFeatured() {
-    const track = document.getElementById('grid');
-    if (!track) return;
-    // show a fuller range in the carousel (featured + best-sellers first)
-    const priority = H.PRODUCTS.filter(p => p.featured || p.bestSelling);
-    const rest = H.PRODUCTS.filter(p => !p.featured && !p.bestSelling);
-    const list = [...priority, ...rest].slice(0, 12);
-    track.innerHTML = list.map(p => H.cardHTML(p)).join('');
-    H.bindGrid(track);
-    H.observeCards();
-    H.refreshIcons();
+    const grid = document.getElementById('grid');
+    if (!grid) return;
+    const tabs = document.getElementById('homeTabs');
 
-    // left/right carousel controls
-    const prev = document.getElementById('rangePrev');
-    const next = document.getElementById('rangeNext');
-    const step = () => {
-      const card = track.querySelector('.card');
-      const w = card ? card.getBoundingClientRect().width + 20 : 320;
-      return Math.max(w, Math.round(track.clientWidth * 0.8));
-    };
-    prev?.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
-    next?.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+    function listFor(tab) {
+      if (tab === 'all') {
+        const priority = H.PRODUCTS.filter(p => p.featured || p.bestSelling);
+        const rest = H.PRODUCTS.filter(p => !p.featured && !p.bestSelling);
+        return [...priority, ...rest].slice(0, 8);
+      }
+      return H.PRODUCTS.filter(p => p.cat === tab);
+    }
+
+    function render(tab) {
+      grid.innerHTML = listFor(tab).map(p => H.cardHTML(p)).join('');
+      H.observeCards();
+      H.refreshIcons(grid);
+      H.refreshPrices(grid);
+    }
+
+    H.bindGrid(grid);
+    tabs?.addEventListener('click', e => {
+      const pill = e.target.closest('.pill');
+      if (!pill) return;
+      tabs.querySelectorAll('.pill').forEach(b => b.classList.toggle('is-active', b === pill));
+      render(pill.dataset.tab);
+    });
+    render('all');
+  }
+
+  /* Hype strip: shoppable product ticker right under the hero */
+  function initHype() {
+    const track = document.getElementById('hypeTrack');
+    if (!track) return;
+    const list = [...H.PRODUCTS].sort((a, b) =>
+      (b.prebook ? 2 : b.bestSelling ? 1 : 0) - (a.prebook ? 2 : a.bestSelling ? 1 : 0)).slice(0, 10);
+    const itemsHTML = list.map(p => `
+      <a class="hype__item ${p.prebook ? 'hype__item--drop' : ''}" href="product.html?id=${p.id}">
+        <img src="${p.img}" alt="" loading="lazy">
+        <span>${p.name.toUpperCase()}</span>
+        <em data-inr="${p.price}">${H.inr(p.price)}</em>
+      </a>`).join('');
+    // two identical halves → the -50% marquee loop never shows a seam
+    track.innerHTML = `<div class="hype__half">${itemsHTML}</div><div class="hype__half" aria-hidden="true">${itemsHTML}</div>`;
   }
 
   function initSmartSplit() {
@@ -113,7 +137,12 @@
     }
 
     let spun = false;
-    function openWheel() { if (H.promoData) return; H.openModal(wheel); }
+    function openWheel(auto) {
+      if (H.promoData) return;
+      // never auto-pop over a modal the user is already inside (prebook, cart…)
+      if (auto && document.querySelector('.prebook.open,.cart.open,.done.open,.search-pop.open,.auth-pop.open')) return;
+      H.openModal(wheel);
+    }
     function close() { H.closeModal(wheel); }
     wheel.addEventListener('click', e => { if (e.target.closest('[data-wheel-close]')) close(); });
 
@@ -149,14 +178,47 @@
     updateFab();
     if (!H.promoData && !sessionStorage.getItem('wheelSeen')) {
       sessionStorage.setItem('wheelSeen', '1');
-      setTimeout(openWheel, 6500);
+      setTimeout(() => openWheel(true), 6500);
     }
+  }
+
+  /* Drop bar countdown — ticks to the HABÄNE 01 drop date */
+  function initDropBar() {
+    const bar = document.getElementById('dropCount');
+    if (!bar) return;
+    const p = H.PRODUCTS.find(x => x.prebook && x.dropDate);
+    if (!p) { document.querySelector('.dropbar')?.remove(); return; }
+    const target = new Date(p.dropDate).getTime();
+    const cells = {
+      d: bar.querySelector('[data-dc="d"]'),
+      h: bar.querySelector('[data-dc="h"]'),
+      m: bar.querySelector('[data-dc="m"]'),
+      s: bar.querySelector('[data-dc="s"]'),
+    };
+    function tick() {
+      let ms = target - Date.now();
+      if (ms <= 0) {
+        clearInterval(t);
+        bar.innerHTML = '<strong class="dropbar__live">IT\'S LIVE ✦</strong>';
+        return;
+      }
+      const d = Math.floor(ms / 864e5);
+      const h = Math.floor(ms % 864e5 / 36e5);
+      const m = Math.floor(ms % 36e5 / 6e4);
+      const s = Math.floor(ms % 6e4 / 1e3);
+      cells.d.textContent = String(d).padStart(2, '0');
+      cells.h.textContent = String(h).padStart(2, '0');
+      cells.m.textContent = String(m).padStart(2, '0');
+      cells.s.textContent = String(s).padStart(2, '0');
+    }
+    tick();
+    const t = setInterval(tick, 1000);
   }
 
   function initNewsletter() {
     document.getElementById('newsForm')?.addEventListener('submit', e => {
       e.preventDefault();
-      document.getElementById('newsDone').textContent = "You're in. Welcome to the list.";
+      document.getElementById('newsDone').textContent = "you're in. don't leave us on read 💌";
       e.target.reset();
       H.toast('Subscribed — see you in your inbox');
     });
@@ -195,6 +257,8 @@
     H.initShared();
 
     initHeroLogo();
+    initHype();
+    initDropBar();
     initFeatured();
     initSmartSplit();
     initFaqCarousel();

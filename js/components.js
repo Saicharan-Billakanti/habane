@@ -20,6 +20,34 @@
   H.icon = icon;
   H.refreshIcons = refreshIcons;
 
+  /* ---- micro-sounds (WebAudio, no files) — play only after a user gesture,
+     so autoplay policies are happy. Kill switch: localStorage habane_sfx = 'off' ---- */
+  let audioCtx;
+  function sfx(kind) {
+    try {
+      if (localStorage.getItem('habane_sfx') === 'off') return;
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const t = audioCtx.currentTime;
+      const notes = kind === 'win'
+        ? [[523.25, 0], [659.25, 0.09], [783.99, 0.18]]   // little C-E-G rise
+        : [[440, 0], [660, 0.06]];                          // soft two-note pop
+      notes.forEach(([f, d]) => {
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'sine';
+        o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t + d);
+        g.gain.exponentialRampToValueAtTime(0.05, t + d + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.18);
+        o.connect(g).connect(audioCtx.destination);
+        o.start(t + d);
+        o.stop(t + d + 0.22);
+      });
+    } catch { /* no audio? no problem */ }
+  }
+  H.sfx = sfx;
+
   /* ---- Toast ---- */
   const toastEl = () => document.getElementById('toast');
   let toastT;
@@ -44,7 +72,7 @@
     if (!el) return;
     el.classList.remove('open');
     el.setAttribute('aria-hidden', 'true');
-    if (!document.querySelector('.qv.open,.cart.open,.search-pop.open,.done.open,.wheel.open,.auth-pop.open'))
+    if (!document.querySelector('.qv.open,.cart.open,.search-pop.open,.done.open,.wheel.open,.auth-pop.open,.prebook.open'))
       document.body.classList.remove('no-scroll');
   }
   H.openModal = openModal;
@@ -52,7 +80,7 @@
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape')
-      $$('.qv.open,.cart.open,.search-pop.open,.done.open,.wheel.open,.auth-pop.open').forEach(closeModal);
+      $$('.qv.open,.cart.open,.search-pop.open,.done.open,.wheel.open,.auth-pop.open,.prebook.open').forEach(closeModal);
   });
 
   /* ---- Nav scroll transparency ---- */
@@ -390,6 +418,13 @@
 
   function initCart() {
     const cartEl = $('#cart');
+    // one empty-state voice across every page's cart markup
+    const emptyEl = $('#cartEmpty');
+    if (emptyEl) {
+      emptyEl.innerHTML = `<div class="cart__empty-icon">${icon('luggage')}</div>
+        <p>it's giving empty 🥲</p>
+        <a href="shop.html" class="cart__empty-btn" data-cart-close>FIX THAT →</a>`;
+    }
     $('#cartBtn')?.addEventListener('click', () => openModal(cartEl));
     $('#drawerCartLink')?.addEventListener('click', e => {
       e.preventDefault();
@@ -407,7 +442,12 @@
       if (e.target.closest('[data-dec]')) H.changeQty(key, -1);
       if (e.target.closest('[data-rm]')) H.removeItem(key);
     });
-    $('#checkoutBtn')?.addEventListener('click', () => {
+    // express-checkout framing: one tap out of the drawer, straight to pay
+    const coBtn = $('#checkoutBtn');
+    if (coBtn && document.body.dataset.page !== 'checkout') {
+      coBtn.innerHTML = 'EXPRESS CHECKOUT <em class="cart__co-sub">⚡ done in 60 seconds</em>';
+    }
+    coBtn?.addEventListener('click', () => {
       if (!H.cartData.length) return;
       window.location.href = 'checkout.html';
     });
@@ -436,7 +476,8 @@
 
   H.addToCartUI = function (id, color, size, qty) {
     const p = H.addToCart(id, color, size, qty);
-    toast(`Added "${p.name}"`);
+    toast(`in the bag 🙌 — ${p.name}`);
+    sfx('pop');
     bumpCart();
     openModal($('#cart'));
   };
@@ -447,32 +488,51 @@
     if (p.badge === 'BESTSELLER' || p.badge === 'SALE' || p.badge === 'TRENDING') {
       badgeClass = 'card__badge--red';
     }
+    if (p.prebook) badgeClass = 'card__badge--brass';
     const badge = p.badge ? `<span class="card__badge ${badgeClass}">${p.badge}</span>` : '';
     const was = p.was ? `<span class="card__was" data-inr="${p.was}">${inr(p.was)}</span>` : '';
     const liked = H.isWish(p.id);
     const back = p.img2 ? `<img class="card__img card__img--back" src="${p.img2}" alt="" loading="lazy">` : '';
+    const idx = H.PRODUCTS.indexOf(p);
+    const no = idx > -1 ? `Nº ${String(idx + 1).padStart(2, '0')}` : '';
+    const fmtCount = n => n >= 1000 ? (Math.round(n / 100) / 10) + 'k' : n;
+    const rating = p.prebook
+      ? `<span class="card__hypeline">✦ first drop — be employee zero of the hype</span>`
+      : `<div class="card__rate"><span class="card__stars">${H.stars(p.stars)}</span><em class="card__reviews">(${fmtCount(p.reviews || 0)})</em></div>`;
+    const save = (p.was && p.was > p.price)
+      ? `<span class="card__save">SAVE <b data-inr="${p.was - p.price}">${inr(p.was - p.price)}</b></span>`
+      : '';
+    const quick = p.prebook
+      ? `<button class="card__add card__add--prebook" data-prebook type="button">PREBOOK ✦ RESERVE YOUR Nº</button>`
+      : `<button class="card__add" data-add type="button">QUICK ADD — 1 TAP</button>`;
+    const meta = p.prebook
+      ? `<span class="card__cat card__cat--drop">DROPS ${p.dropLabel || 'SOON'} · ${p.edition || 300} PIECES</span>`
+      : `<span class="card__cat">${p.catLabel}${no ? ` · ${no}` : ''}</span>`;
     return `
-    <article class="card ${p.img2 ? 'has-alt' : ''}" data-cat="${p.cat}" data-id="${p.id}">
+    <article class="card ${p.img2 ? 'has-alt' : ''} ${p.prebook ? 'card--prebook' : ''}" data-cat="${p.cat}" data-id="${p.id}">
       <a href="product.html?id=${p.id}" class="card__link">
         <div class="card__media">
           ${badge}
           <button class="card__wish ${liked ? 'liked' : ''}" data-wish type="button" aria-label="Wishlist">${icon('heart')}</button>
           <img class="card__img card__img--front" src="${p.img}" alt="${p.name}" loading="lazy">
           ${back}
+          <span class="card__sheen" aria-hidden="true"></span>
           <div class="card__quick">
             <span class="card__view">VIEW DETAILS</span>
-            <button class="card__add" data-add type="button">QUICK ADD</button>
+            ${quick}
           </div>
         </div>
         <div class="card__body">
           <div class="card__info">
             <div class="card__info-left">
               <h3 class="card__name">${p.name.toUpperCase()}</h3>
-              <span class="card__cat">${p.catLabel}</span>
+              ${meta}
+              ${rating}
             </div>
             <div class="card__info-right">
               <span class="card__price" data-inr="${p.price}">${inr(p.price)}</span>
               ${was}
+              ${save}
             </div>
           </div>
         </div>
@@ -503,6 +563,11 @@
         const p = byId(id);
         H.addToCartUI(id, p.colors[0].name, p.sizes[0], 1);
       }
+      if (e.target.closest('[data-prebook]')) {
+        e.preventDefault();
+        e.stopPropagation();
+        H.openPrebook(id);
+      }
     });
   };
 
@@ -519,7 +584,7 @@
   };
 
   /* ---- Ribbon / marquee (seamless, gap-proof) ---- */
-  const RIBBON_PHRASE = 'FREE SHIPPING ON EVERYTHING ✦    SMART DUFFELS — NOW LIVE ✦    CARRY THE CITY ✦    LIFETIME ZIPPER WARRANTY ✦    NEW DROP: METROPOLITAN SERIES ✦    ';
+  const RIBBON_PHRASE = 'PREBOOK: HABÄNE 01 — LUNAR EDITION · 300 PIECES ONLY ✦    CHECKOUT IN 60 SECONDS — UPI · COD · CARD ✦    FREE SHIPPING ON EVERYTHING ✦    CARRY THE CITY ✦    LIFETIME ZIPPER WARRANTY ✦    ';
   function fillRibbon(track) {
     const phrase = track.dataset.phrase || RIBBON_PHRASE;
     const span = document.createElement('span');
@@ -548,14 +613,37 @@
     });
   }
 
-  /* ---- Gen-z "Carry the City" footer (all pages) ---- */
+  /* ---- Sparkling "night sky" footer (all pages) ---- */
   function initFooter() {
     const foot = document.querySelector('.foot');
     if (!foot) return;
     const isHome = document.body.dataset.page === 'home';
     const lookbookHref = isHome ? '#lookbook' : 'index.html#lookbook';
     const storyHref = isHome ? '#story' : 'index.html#story';
+
+    // hand-rolled twinkles — random size, position & rhythm so no two visits match
+    let sparkles = '';
+    for (let i = 0; i < 26; i++) {
+      const big = Math.random() > 0.72;
+      sparkles += `<i class="foot__spark ${big ? 'foot__spark--star' : ''}" style="
+        left:${(Math.random() * 98).toFixed(1)}%;
+        top:${(Math.random() * 92).toFixed(1)}%;
+        --tw:${(2.2 + Math.random() * 4.5).toFixed(2)}s;
+        --twd:${(Math.random() * 5).toFixed(2)}s;
+        --sc:${(0.5 + Math.random() * 1.1).toFixed(2)};">${big ? '✦' : ''}</i>`;
+    }
+
+    foot.classList.add('foot--sky');
     foot.innerHTML = `
+      <div class="foot__sparks" aria-hidden="true">${sparkles}</div>
+      <div class="foot__shimmerline" aria-hidden="true"></div>
+
+      <div class="foot__hero">
+        <p class="foot__hero-eyebrow">THE NEXT DROP ✦ 300 PIECES, NUMBERED</p>
+        <h3 class="foot__hero-title">HABÄNE 01 — LUNAR EDITION</h3>
+        <button type="button" class="foot__prebook" data-open-prebook="p15">PREBOOK YOUR Nº →</button>
+      </div>
+
       <div class="foot__top">
         <div class="foot__brand">
           <img src="assets/brand/wordmark-silver.png" alt="Habäne" class="foot__word" />
@@ -575,7 +663,7 @@
           <h4>Lowkey Iconic</h4>
           <a href="${lookbookHref}">Lookbook</a>
           <a href="${storyHref}">Our Lore</a>
-          <a href="#">The Drop List</a>
+          <a href="product.html?id=p15">The Drop List</a>
           <a href="#">Gift Cards fr</a>
         </div>
         <div class="foot__col foot__col--boring">
@@ -587,6 +675,9 @@
           <a href="contact.html">Adulting (Contact us)</a>
         </div>
       </div>
+
+      <div class="foot__giant" aria-hidden="true"><span>HABÄNE</span></div>
+
       <div class="foot__bottom">
         <p>© <span id="yr"></span> Habäne. All rights reserved. No cap.</p>
         <p class="foot__vibe">Made with chaotic good energy ✦ Carry the city</p>
@@ -594,6 +685,89 @@
     const yr = foot.querySelector('#yr');
     if (yr) yr.textContent = new Date().getFullYear();
   }
+
+  /* ---- Prebook: numbered reservation modal (all pages) ---- */
+  const PREBOOK_BASE = 137; // spots already claimed before the site counter starts
+
+  function prebookCount() {
+    try { return (JSON.parse(localStorage.getItem('habane_prebooks')) || []).length; }
+    catch { return 0; }
+  }
+
+  function initPrebook() {
+    if (document.getElementById('prebookPop')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'prebook';
+    wrap.id = 'prebookPop';
+    wrap.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(wrap);
+    wrap.addEventListener('click', e => {
+      if (e.target.closest('[data-prebook-close]')) closeModal(wrap);
+    });
+
+    // any element with data-open-prebook opens the modal (footer, hero, drop bar…)
+    document.addEventListener('click', e => {
+      const opener = e.target.closest('[data-open-prebook]');
+      if (opener) { e.preventDefault(); H.openPrebook(opener.dataset.openPrebook); }
+    });
+  }
+
+  H.openPrebook = function (id) {
+    const p = byId(id) || H.PRODUCTS.find(x => x.prebook);
+    if (!p) return;
+    const pop = document.getElementById('prebookPop');
+    if (!pop) return;
+    const claimed = PREBOOK_BASE + prebookCount();
+    const left = Math.max(0, (p.edition || 300) - claimed);
+    const mine = (() => {
+      try { return (JSON.parse(localStorage.getItem('habane_prebooks')) || []).find(r => r.id === p.id); }
+      catch { return null; }
+    })();
+
+    pop.innerHTML = `
+      <div class="prebook__overlay" data-prebook-close></div>
+      <div class="prebook__panel" role="dialog" aria-modal="true" aria-label="Prebook ${esc(p.name)}">
+        <button class="prebook__close" data-prebook-close type="button" aria-label="Close">✕</button>
+        <div class="prebook__media"><img src="${p.img}" alt="${esc(p.name)}"><span class="prebook__stamp">Nº ___ / ${p.edition || 300}</span></div>
+        <div class="prebook__body">
+          <p class="prebook__eyebrow">FIRST ACCESS ✦ DROPS ${p.dropLabel || 'SOON'}</p>
+          <h3 class="prebook__title">${esc(p.name)}</h3>
+          <p class="prebook__sub">${p.edition || 300} pieces, each laser-etched with its number. Reserve yours free — pay only when it ships. <strong>${left} spots left.</strong></p>
+          ${mine ? `
+            <div class="prebook__ok">
+              <strong>You're already in — Nº ${String(mine.no).padStart(4, '0')}</strong>
+              <span>We'll ping ${esc(mine.contact)} the second it drops.</span>
+            </div>` : `
+            <form class="prebook__form" id="prebookForm">
+              <input type="text" id="prebookName" placeholder="your name" required autocomplete="name">
+              <input type="text" id="prebookContact" placeholder="phone or email" required>
+              <button type="submit" class="prebook__cta">RESERVE MY Nº ✦</button>
+            </form>
+            <p class="prebook__fine">No payment now. Your Nº is locked for 48h at drop time.</p>`}
+        </div>
+      </div>`;
+
+    pop.querySelector('#prebookForm')?.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = pop.querySelector('#prebookName').value.trim();
+      const contact = pop.querySelector('#prebookContact').value.trim();
+      if (!name || !contact) return;
+      let list;
+      try { list = JSON.parse(localStorage.getItem('habane_prebooks')) || []; } catch { list = []; }
+      const no = PREBOOK_BASE + list.length + 1;
+      list.push({ id: p.id, name, contact, no, at: new Date().toISOString() });
+      localStorage.setItem('habane_prebooks', JSON.stringify(list));
+      sfx('win');
+      pop.querySelector('.prebook__body').innerHTML = `
+        <p class="prebook__eyebrow">CONSIDER IT DONE ✦</p>
+        <h3 class="prebook__title">You're Nº ${String(no).padStart(4, '0')}</h3>
+        <p class="prebook__sub">of ${p.edition || 300}. That number is etched on your bag. We'll ping <strong>${esc(contact)}</strong> the second the drop goes live — ${p.dropLabel || 'soon'}.</p>
+        <button type="button" class="prebook__cta" data-prebook-close>CARRY ON →</button>`;
+      toast(`Reserved — you're Nº ${String(no).padStart(4, '0')} ✦`);
+    });
+
+    openModal(pop);
+  };
 
   /* ---- Floating 3D Showroom button (bottom-right) ---- */
   function initShowroomFab() {
@@ -619,6 +793,7 @@
     initCart();
     initRibbon();
     initFooter();
+    initPrebook();
     initShowroomFab();
     const yr = $('#yr');
     if (yr) yr.textContent = new Date().getFullYear();

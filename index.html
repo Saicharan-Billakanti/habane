@@ -78,6 +78,7 @@
 
     <section class="hero">
       <div class="hero__glow"></div>
+      <span class="sticker sticker--navy" style="--tilt:6deg; top:12%; right:5%">SHIPS IN 24H FR ✦</span>
       <div class="hero__layout">
         <div class="hero__inner">
           <p class="hero__eyebrow">EST. — CARRY THE CITY</p>
@@ -97,10 +98,11 @@
               </span>
               <span class="spin-btn__arrow">↗</span>
             </a>
-            <a href="smart-series.html" class="ghost-btn">
-              <span>Meet the Smart Duffel</span>
-              <i>→</i>
-            </a>
+            <button type="button" class="prebook-btn" data-open-prebook="p15">
+              <span class="prebook-btn__spark">✦</span>
+              <span class="prebook-btn__label">PREBOOK — HABÄNE 01</span>
+              <em class="prebook-btn__sub">300 numbered pieces</em>
+            </button>
           </div>
         </div>
         <div class="hero__bag-3d-wrap">
@@ -115,18 +117,54 @@
       </div>
     </section>
 
-    <section class="featured featured--carousel" id="shop">
+    <!-- ===== Hype strip: shoppable ticker, products above the fold ===== -->
+    <div class="hype" id="hype">
+      <span class="hype__label">HOT RN →</span>
+      <div class="hype__viewport"><div class="hype__track" id="hypeTrack"></div></div>
+    </div>
+
+    <!-- ===== Drop bar: HABÄNE 01 countdown + prebook ===== -->
+    <section class="dropbar" id="drop">
+      <div class="dropbar__inner">
+        <div class="dropbar__left">
+          <span class="dropbar__pulse" aria-hidden="true"></span>
+          <div class="dropbar__txt">
+            <strong>HABÄNE 01 — LUNAR EDITION</strong>
+            <span>300 pieces, laser-numbered. Once they're gone, they're lore.</span>
+          </div>
+        </div>
+        <div class="dropbar__count" id="dropCount" aria-label="Time until drop">
+          <div><b data-dc="d">00</b><i>days</i></div>
+          <div><b data-dc="h">00</b><i>hrs</i></div>
+          <div><b data-dc="m">00</b><i>min</i></div>
+          <div><b data-dc="s">00</b><i>sec</i></div>
+        </div>
+        <button type="button" class="dropbar__cta" data-open-prebook="p15">PREBOOK YOUR Nº ✦</button>
+      </div>
+    </section>
+
+    <section class="featured" id="shop">
       <div class="featured__head featured__head--row">
         <div class="featured__head-left">
-          <h2 class="section-title">SHOP THE RANGE</h2>
-          <p class="section-sub">Built for everywhere. Carry the city.</p>
+          <h2 class="section-title">THE LINEUP</h2>
+          <p class="section-sub">zero mid bags. we checked.</p>
         </div>
         <a href="shop.html" class="explore-all">Explore All Products <i data-lucide="arrow-right"></i></a>
       </div>
-      <div class="featured__carousel-wrap">
-        <button type="button" class="carousel-btn carousel-btn--prev" id="rangePrev" aria-label="Previous"><i data-lucide="chevron-left"></i></button>
-        <div class="featured__track" id="grid"></div>
-        <button type="button" class="carousel-btn carousel-btn--next" id="rangeNext" aria-label="Next"><i data-lucide="chevron-right"></i></button>
+      <div class="home-tabs" id="homeTabs">
+        <button type="button" class="pill is-active" data-tab="all">Everything</button>
+        <button type="button" class="pill" data-tab="duffel">Duffels</button>
+        <button type="button" class="pill" data-tab="backpack">Backpacks</button>
+        <button type="button" class="pill" data-tab="smart">Smart Series</button>
+        <button type="button" class="pill" data-tab="sling">Slings</button>
+      </div>
+      <div class="grid grid--home" id="grid"></div>
+      <div class="trust">
+        <div class="trust__item"><span>🚚</span><div><strong>FREE SHIPPING</strong><em>on every order</em></div></div>
+        <div class="trust__item"><span>💸</span><div><strong>COD AVAILABLE</strong><em>pay when it lands</em></div></div>
+        <div class="trust__item"><span>♾️</span><div><strong>LIFETIME ZIPPERS</strong><em>we fix, forever</em></div></div>
+        <div class="trust__item"><span>↩️</span><div><strong>7-DAY RETURNS</strong><em>no drama, no forms</em></div></div>
+        <div class="trust__item"><span>⚡</span><div><strong>60-SEC CHECKOUT</strong><em>UPI · COD · card</em></div></div>
       </div>
     </section>
 
@@ -139,7 +177,7 @@
         <img src="assets/products/p3-navy-voyager-duffel.jpg" alt="Voyager series" />
       </a>
       <a class="split-feature__center" href="shop.html">
-        <span class="split-feature__tag">Explore</span>
+        <span class="split-feature__tag">pick a side ↓</span>
         <h2 class="split-feature__title">SKYLINE — VOYAGER</h2>
       </a>
     </section>
@@ -154,8 +192,8 @@
     <!-- ============ LOOKBOOK ============ -->
     <section class="look" id="lookbook">
       <div class="look__head">
-        <h2 class="section-title">THE LOOKBOOK</h2>
-        <p class="section-sub">Skylines you can sling over your shoulder.</p>
+        <h2 class="section-title">FIT CHECK</h2>
+        <p class="section-sub">POV: the bag is the main character.</p>
       </div>
       <div class="look__grid">
         <figure class="look__item look__item--tall">
@@ -178,7 +216,9 @@
     </section>
 
     <section class="story" id="story">
+      <span class="sticker sticker--white" style="--tilt:4deg; top:1.5rem; right:8%">AS SEEN ON YOUR FYP ✦</span>
       <div class="story__inner">
+        <p class="story__eyebrow">THE LORE ✦</p>
         <h2 class="story__title">We make bags for people who<br><span>can't sit still.</span></h2>
         <p>Habäne started with one idea — your luggage should keep up with your life, not slow it down. Every piece is built in our signature midnight navy and metallic silver, printed with hand-drawn skylines, and engineered to survive the chaos of actually going places.</p>
         <div class="story__stats">
@@ -207,8 +247,8 @@
 
     <div class="strip" aria-hidden="true">
       <div class="strip__track">
-        <span>CARRY THE CITY · MIDNIGHT NAVY · METALLIC SILVER · SMART INSIDE · CARRY THE CITY · MIDNIGHT NAVY · METALLIC SILVER · SMART INSIDE · </span>
-        <span>CARRY THE CITY · MIDNIGHT NAVY · METALLIC SILVER · SMART INSIDE · CARRY THE CITY · MIDNIGHT NAVY · METALLIC SILVER · SMART INSIDE · </span>
+        <span>POV: YOU NEVER UNPACK ✦ MAIN CHARACTER LUGGAGE ✦ YOUR GATE IS BOARDING ✦ CERTIFIED NOT MID ✦ </span>
+        <span>POV: YOU NEVER UNPACK ✦ MAIN CHARACTER LUGGAGE ✦ YOUR GATE IS BOARDING ✦ CERTIFIED NOT MID ✦ </span>
       </div>
     </div>
 
@@ -226,13 +266,14 @@
 
     <section class="news">
       <div class="news__inner">
-        <h2>GET ON THE LIST<span>.</span></h2>
-        <p>Drops, restocks, and exclusive early access. No spam.</p>
+        <span class="sticker sticker--brass" style="--tilt:-5deg; top:1.6rem; left:7%">WE DON'T YAP ✦</span>
+        <h2>JOIN THE GROUPCHAT<span>.</span></h2>
+        <p>Drops, restocks, early access. That's it, that's the chat.</p>
         <form class="news__form" id="newsForm">
           <input type="email" placeholder="your@email.here" required />
           <button type="submit" class="btn-3d btn-3d--join">
             <span class="btn-3d__shadow"></span>
-            <span class="btn-3d__face">JOIN</span>
+            <span class="btn-3d__face">PUT ME ON</span>
           </button>
         </form>
         <p class="news__done" id="newsDone"></p>

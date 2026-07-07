@@ -174,6 +174,17 @@ const PRODUCTS = [
     specs: { material: 'Tech canvas', capacity: '60–70L', weight: '2.1 kg', warranty: 'Lifetime zipper' },
     smartFeatures: ['expand', 'org'] },
 
+  { id: 'p15', name: 'HABÄNE 01 — Lunar Edition', cat: 'smart', catLabel: 'Smart Series', price: 15999, was: null,
+    img: 'assets/products/p4-smart-duffel-ivory.jpg', img2: 'assets/products/alt-white-duffel.jpg',
+    images: ['assets/products/p4-smart-duffel-ivory.jpg', 'assets/products/alt-white-duffel.jpg', 'assets/products/alt-steel-duffel.jpg'],
+    badge: 'PREBOOK', stars: 5, new: true, bestSelling: false, featured: true,
+    prebook: true, dropDate: '2026-08-01T18:00:00+05:30', dropLabel: 'AUG 01 · 6PM IST', edition: 300,
+    colors: [{ name: 'Lunar', hex: '#e8eaef' }, { name: 'Eclipse', hex: '#0b1240' }],
+    sizes: ['45L'],
+    desc: 'Our first numbered drop. 300 pieces, each laser-etched with its own Nº. Lunar-grey tech canvas, brass hardware, full smart core — and it never restocks.',
+    specs: { material: 'Lunar tech canvas + brass', capacity: '45L', weight: '1.75 kg', warranty: 'Lifetime + 2yr electronics' },
+    smartFeatures: ['usb', 'power', 'fingerprint', 'gps', 'antitheft', 'laptop', 'hidden', 'water', 'org', 'rfid'] },
+
   { id: 'p14', name: 'Trailhead Backpack', cat: 'backpack', catLabel: 'Backpack', price: 5899, was: null,
     img: 'assets/products/p7-heritage-backpack.jpg', img2: 'assets/products/alt-black-backpack-art.jpg',
     images: ['assets/products/p7-heritage-backpack.jpg', 'assets/products/alt-black-backpack-art.jpg'],
@@ -184,6 +195,13 @@ const PRODUCTS = [
     specs: { material: 'Ripstop nylon', capacity: '24–32L', weight: '1.05 kg', warranty: 'Lifetime zipper' },
     smartFeatures: ['water', 'laptop', 'hidden'] },
 ];
+
+// review counts shown on cards — social proof next to the stars
+const REVIEW_COUNTS = {
+  p1: 1243, p2: 412, p3: 287, p4: 3893, p5: 198, p6: 861, p7: 154,
+  p8: 672, p9: 233, p10: 129, p11: 1508, p12: 344, p13: 96, p14: 88, p15: 0,
+};
+PRODUCTS.forEach(p => { if (p.reviews === undefined) p.reviews = REVIEW_COUNTS[p.id] ?? 120; });
 
 // Merge local storage overrides before exposing window.HABANE
 (function mergeOverrides() {
