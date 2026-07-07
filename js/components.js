@@ -220,7 +220,7 @@
     }
 
     function updateBtn() {
-      btn.innerHTML = `${flagImg(current.code, 'loc-select__flag-img')}<span>${current.currency}</span>${icon('chevron-down', 'loc-select__chev')}`;
+      btn.innerHTML = `${flagImg(current.code, 'loc-select__flag-img')}<span class="loc-select__cur-label">${current.currency}</span>${icon('chevron-down', 'loc-select__chev')}`;
       refreshIcons(btn);
     }
 
@@ -771,7 +771,9 @@
 
   /* ---- Floating 3D Showroom button (bottom-right) ---- */
   function initShowroomFab() {
-    if (document.body.dataset.page === 'showroom') return;
+    // showroom: redundant; checkout: a distraction FAB has no business
+    // floating over the sticky pay button on a task the user is trying to finish
+    if (document.body.dataset.page === 'showroom' || document.body.dataset.page === 'checkout') return;
     if (document.querySelector('.showroom-fab')) return;
     const a = document.createElement('a');
     a.href = 'showroom.html';
