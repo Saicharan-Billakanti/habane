@@ -48,6 +48,149 @@
   }
   H.sfx = sfx;
 
+  function getAudioCtx() {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  /* ---- ambient soundscape: opt-in only, off by default.
+     A soft procedural pad (no files) — a low open chord through a filtered
+     feedback delay for space, breathing via a slow LFO, plus a faint high
+     shimmer for the "metallic silver" sparkle. Kept very quiet — a room
+     tone, not a track. */
+  let ambient = null; // { master, oscillators, ctx } while running
+
+  function buildAmbient() {
+    if (ambient) return;
+    const ctx = getAudioCtx();
+    const master = ctx.createGain();
+    master.gain.value = 0;
+    master.connect(ctx.destination);
+
+    const delay = ctx.createDelay(2);
+    delay.delayTime.value = 0.9;
+    const feedback = ctx.createGain();
+    feedback.gain.value = 0.28;
+    const delayFilter = ctx.createBiquadFilter();
+    delayFilter.type = 'lowpass';
+    delayFilter.frequency.value = 1400;
+    delay.connect(delayFilter).connect(feedback).connect(delay);
+    delay.connect(master);
+
+    const lowpass = ctx.createBiquadFilter();
+    lowpass.type = 'lowpass';
+    lowpass.frequency.value = 900;
+    lowpass.connect(master);
+    lowpass.connect(delay);
+
+    const notes = [65.41, 98.0, 130.81, 196.0]; // C2 G2 C3 G3 — low, open, spacious
+    const oscillators = notes.map((f, i) => {
+      const o = ctx.createOscillator();
+      o.type = i % 2 ? 'triangle' : 'sine';
+      o.frequency.value = f;
+      o.detune.value = (i - 1.5) * 4;
+      const g = ctx.createGain();
+      g.gain.value = 0.5 / notes.length;
+      o.connect(g).connect(lowpass);
+      o.start();
+      return o;
+    });
+
+    const lfo = ctx.createOscillator();
+    lfo.frequency.value = 0.045;
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.value = 220;
+    lfo.connect(lfoGain).connect(lowpass.frequency);
+    lfo.start();
+
+    const shimmer = ctx.createOscillator();
+    shimmer.type = 'triangle';
+    shimmer.frequency.value = 1046.5; // C6, faint
+    const shimmerGain = ctx.createGain();
+    shimmerGain.gain.value = 0.012;
+    shimmer.connect(shimmerGain).connect(master);
+    shimmer.start();
+
+    ambient = { master, oscillators: [...oscillators, lfo, shimmer], ctx };
+    master.gain.linearRampToValueAtTime(0.045, ctx.currentTime + 2.2);
+  }
+
+  function stopAmbient() {
+    if (!ambient) return;
+    const dying = ambient;
+    ambient = null;
+    dying.master.gain.cancelScheduledValues(dying.ctx.currentTime);
+    dying.master.gain.setValueAtTime(dying.master.gain.value, dying.ctx.currentTime);
+    dying.master.gain.linearRampToValueAtTime(0, dying.ctx.currentTime + 0.8);
+    setTimeout(() => dying.oscillators.forEach(o => { try { o.stop(); } catch { } }), 900);
+  }
+
+  /* a short 3-note bell — the brand's sonic mark, played once whenever
+     ambience is switched on (a little "waking up" moment) */
+  function playChime() {
+    try {
+      const ctx = getAudioCtx();
+      const t = ctx.currentTime;
+      [[523.25, 0], [783.99, 0.14], [1046.5, 0.26]].forEach(([f, d]) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t + d);
+        g.gain.exponentialRampToValueAtTime(0.06, t + d + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.9);
+        o.connect(g).connect(ctx.destination);
+        o.start(t + d);
+        o.stop(t + d + 1);
+      });
+    } catch { /* no-op */ }
+  }
+
+  const isSoundOn = () => localStorage.getItem('habane_sound') === 'on';
+
+  function syncSoundToggleUI() {
+    const btn = document.getElementById('soundToggle');
+    if (!btn) return;
+    const on = isSoundOn();
+    btn.classList.toggle('is-on', on);
+    btn.innerHTML = icon(on ? 'volume-2' : 'volume-x');
+    btn.setAttribute('aria-label', on ? 'Turn ambient sound off' : 'Turn ambient sound on');
+    refreshIcons(btn);
+  }
+
+  function enableSound(playIntro) {
+    localStorage.setItem('habane_sound', 'on');
+    if (playIntro) playChime();
+    setTimeout(buildAmbient, playIntro ? 500 : 0);
+    syncSoundToggleUI();
+  }
+  function disableSound() {
+    localStorage.setItem('habane_sound', 'off');
+    stopAmbient();
+    syncSoundToggleUI();
+  }
+
+  function initSoundToggle() {
+    const rightNav = document.querySelector('.nav__links--right');
+    if (!rightNav || document.getElementById('soundToggle')) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'soundToggle';
+    btn.className = 'nav__icon nav__iconbtn sound-toggle';
+    rightNav.insertBefore(btn, document.getElementById('searchBtn'));
+    syncSoundToggleUI();
+    btn.addEventListener('click', () => { isSoundOn() ? disableSound() : enableSound(true); });
+
+    // returning visitors who had it on: browsers won't let audio start
+    // without a fresh gesture on THIS page, so resume on their first touch
+    if (isSoundOn()) {
+      const resume = () => { buildAmbient(); cleanup(); };
+      const cleanup = () => ['pointerdown', 'keydown', 'scroll'].forEach(ev => document.removeEventListener(ev, resume));
+      ['pointerdown', 'keydown', 'scroll'].forEach(ev => document.addEventListener(ev, resume, { once: true, passive: true }));
+    }
+  }
+
   /* ---- Toast ---- */
   const toastEl = () => document.getElementById('toast');
   let toastT;
@@ -483,6 +626,23 @@
   };
 
   /* ---- Product card HTML ---- */
+  /* ---- boarding-pass ticket line: "FROM DEL TO ANYWHERE" ---- */
+  const BOARDING_OVERRIDES = {
+    p1: ['DEL', 'ANYWHERE'], p2: ['BOM', 'ESCAPE'], p3: ['GOA', 'WAVES'], p4: ['BLR', 'FUTURE'],
+  };
+  const BOARDING_CODES = ['DEL', 'BOM', 'BLR', 'GOA', 'HYD', 'MAA', 'CCU', 'PNQ', 'JAI', 'COK'];
+  const BOARDING_TO = {
+    duffel: ['ANYWHERE', 'ESCAPE', 'THE COAST', 'SOMEWHERE ELSE', 'NOWHERE SPECIFIC'],
+    backpack: ['CAMPUS', 'EVERYWHERE', 'THE TRAIL', 'MONDAY', 'NOWHERE FAST'],
+    smart: ['FUTURE', 'THE GRID', 'GATE 7', 'TOMORROW', 'ORBIT'],
+    sling: ['WEEKEND', 'DOWNTOWN', 'NIGHT OUT', 'WHEREVER', 'LOW-KEY'],
+  };
+  function boardingPass(p, idx) {
+    if (BOARDING_OVERRIDES[p.id]) return BOARDING_OVERRIDES[p.id];
+    const pool = BOARDING_TO[p.cat] || BOARDING_TO.duffel;
+    return [BOARDING_CODES[idx % BOARDING_CODES.length], pool[idx % pool.length]];
+  }
+
   H.cardHTML = function (p, opts = {}) {
     let badgeClass = 'card__badge--black';
     if (p.badge === 'BESTSELLER' || p.badge === 'SALE' || p.badge === 'TRENDING') {
@@ -508,6 +668,14 @@
     const meta = p.prebook
       ? `<span class="card__cat card__cat--drop">DROPS ${p.dropLabel || 'SOON'} · ${p.edition || 300} PIECES</span>`
       : `<span class="card__cat">${p.catLabel}${no ? ` · ${no}` : ''}</span>`;
+    const [bpFrom, bpTo] = boardingPass(p, idx > -1 ? idx : 0);
+    const ticket = `
+      <div class="card__ticket">
+        <span class="card__ticket-from">FROM <b>${bpFrom}</b></span>
+        <span class="card__ticket-arrow">→</span>
+        <span class="card__ticket-to">TO <b>${bpTo}</b></span>
+        <span class="card__barcode" aria-hidden="true"></span>
+      </div>`;
     return `
     <article class="card ${p.img2 ? 'has-alt' : ''} ${p.prebook ? 'card--prebook' : ''}" data-cat="${p.cat}" data-id="${p.id}">
       <a href="product.html?id=${p.id}" class="card__link">
@@ -522,6 +690,7 @@
             ${quick}
           </div>
         </div>
+        ${ticket}
         <div class="card__body">
           <div class="card__info">
             <div class="card__info-left">
@@ -797,6 +966,7 @@
     initFooter();
     initPrebook();
     initShowroomFab();
+    initSoundToggle();
     const yr = $('#yr');
     if (yr) yr.textContent = new Date().getFullYear();
     refreshIcons();

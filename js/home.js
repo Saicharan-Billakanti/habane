@@ -3,36 +3,55 @@
 (function () {
   const H = window.HABANE;
 
-  /* Product wall: category tabs, no hover needed, 8+ products in view */
-  function initFeatured() {
-    const grid = document.getElementById('grid');
-    if (!grid) return;
-    const tabs = document.getElementById('homeTabs');
+  /* THE LINEUP — clean horizontal carousel of minimal product cards */
+  function initLineup() {
+    const track = document.getElementById('grid');
+    if (!track) return;
+    const priority = H.PRODUCTS.filter(p => p.featured || p.bestSelling);
+    const rest = H.PRODUCTS.filter(p => !p.featured && !p.bestSelling);
+    const list = [...priority, ...rest].slice(0, 8);
 
-    function listFor(tab) {
-      if (tab === 'all') {
-        const priority = H.PRODUCTS.filter(p => p.featured || p.bestSelling);
-        const rest = H.PRODUCTS.filter(p => !p.featured && !p.bestSelling);
-        return [...priority, ...rest].slice(0, 8);
-      }
-      return H.PRODUCTS.filter(p => p.cat === tab);
-    }
+    track.innerHTML = list.map(p => {
+      const badgeText = p.prebook ? 'PREBOOK' : (p.badge || (p.cat === 'smart' ? 'SMART' : ''));
+      const badge = badgeText
+        ? `<span class="lcard__badge ${p.prebook ? 'lcard__badge--brass' : ''}">${badgeText}</span>` : '';
+      const addLabel = p.prebook ? 'PREBOOK ✦' : 'QUICK ADD ✦';
+      const addAttr = p.prebook ? 'data-prebook' : 'data-add';
+      return `
+      <a class="lcard" href="product.html?id=${p.id}" data-id="${p.id}">
+        <div class="lcard__media">
+          ${badge}
+          <img src="${p.img}" alt="${p.name}" loading="lazy">
+          <button class="lcard__add" ${addAttr} type="button">${addLabel}</button>
+        </div>
+        <div class="lcard__body">
+          <h3 class="lcard__name">${p.name}</h3>
+          <span class="lcard__price" data-inr="${p.price}">${H.inr(p.price)}</span>
+        </div>
+      </a>`;
+    }).join('');
 
-    function render(tab) {
-      grid.innerHTML = listFor(tab).map(p => H.cardHTML(p)).join('');
-      H.observeCards();
-      H.refreshIcons(grid);
-      H.refreshPrices(grid);
-    }
-
-    H.bindGrid(grid);
-    tabs?.addEventListener('click', e => {
-      const pill = e.target.closest('.pill');
-      if (!pill) return;
-      tabs.querySelectorAll('.pill').forEach(b => b.classList.toggle('is-active', b === pill));
-      render(pill.dataset.tab);
+    // quick-add / prebook straight from the carousel
+    track.addEventListener('click', e => {
+      const btn = e.target.closest('[data-add],[data-prebook]');
+      if (!btn) return;
+      e.preventDefault();
+      const p = H.byId(btn.closest('[data-id]').dataset.id);
+      if (btn.hasAttribute('data-prebook')) { H.openPrebook?.(p.id); return; }
+      H.addToCartUI(p.id, p.colors[0].name, p.sizes[0], 1);
     });
-    render('all');
+
+    // next-arrow scrolls a page; loops back to start once it reaches the end
+    const nextBtn = document.getElementById('rangeNext');
+    nextBtn?.addEventListener('click', () => {
+      const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 12;
+      if (atEnd) { track.scrollTo({ left: 0, behavior: 'smooth' }); return; }
+      const card = track.querySelector('.lcard');
+      const step = card ? (card.getBoundingClientRect().width + 18) * 2 : track.clientWidth * 0.8;
+      track.scrollBy({ left: step, behavior: 'smooth' });
+    });
+
+    H.refreshPrices(track);
   }
 
   /* Hype strip: shoppable product ticker right under the hero */
@@ -60,54 +79,26 @@
     });
   }
 
-  function initFaqCarousel() {
-    const track = document.getElementById('faqTrack');
-    const prev = document.getElementById('faqPrev');
-    const next = document.getElementById('faqNext');
-    if (!track) return;
-
-    track.innerHTML = H.FAQ_ITEMS.map((item, i) => `
-      <article class="faq-card" data-index="${i}">
-        <div class="faq-card__media">
-          <img src="${item.img}" alt="">
+  /* THE TEA — static chat-bubble FAQ (question bubble + navy answer bubble) */
+  function initFaqChat() {
+    const grid = document.getElementById('teaGrid');
+    if (!grid) return;
+    const TIMES = [['11:28 AM', '11:30 AM'], ['12:05 PM', '12:07 PM'], ['01:40 PM', '01:42 PM'], ['02:15 PM', '02:16 PM'], ['03:02 PM', '03:04 PM']];
+    grid.innerHTML = H.FAQ_ITEMS.map((item, i) => {
+      const [qt, at] = TIMES[i % TIMES.length];
+      return `
+      <div class="tea__col">
+        <div class="tea__bubble tea__bubble--q">
+          <p>${item.q}</p>
+          <span class="tea__time">${qt}</span>
         </div>
-        <div class="faq-card__body">
-          <span class="faq-card__tag">${item.tag}</span>
-          <h3 class="faq-card__q">"${item.q.toUpperCase()}"</h3>
-          <p class="faq-card__a">${item.a}</p>
+        <div class="tea__bubble tea__bubble--a">
+          <span class="tea__avatar">☕</span>
+          <p>${item.a}</p>
+          <span class="tea__time">${at}</span>
         </div>
-      </article>`).join('');
-
-    let index = 0;
-    const cards = [...track.querySelectorAll('.faq-card')];
-    const total = cards.length;
-
-    function goTo(i) {
-      index = (i + total) % total;
-      track.style.transform = `translateX(calc(-${index} * (min(88vw, 720px) + 1.2rem)))`;
-      cards.forEach((c, j) => c.classList.toggle('is-active', j === index));
-    }
-
-    prev?.addEventListener('click', () => goTo(index - 1));
-    next?.addEventListener('click', () => goTo(index + 1));
-    track.addEventListener('click', e => {
-      if (e.target.closest('[data-faq-prev]')) goTo(index - 1);
-      if (e.target.closest('[data-faq-next]')) goTo(index + 1);
-    });
-
-    let startX = 0;
-    let dragging = false;
-    track.addEventListener('pointerdown', e => { dragging = true; startX = e.clientX; track.setPointerCapture(e.pointerId); });
-    track.addEventListener('pointerup', e => {
-      if (!dragging) return;
-      dragging = false;
-      const dx = e.clientX - startX;
-      if (dx > 60) goTo(index - 1);
-      else if (dx < -60) goTo(index + 1);
-    });
-
-    goTo(0);
-    H.refreshIcons(track);
+      </div>`;
+    }).join('');
   }
 
   /* Spin-to-win discount wheel — floating FAB opens a modal wheel that
@@ -259,9 +250,9 @@
     initHeroLogo();
     initHype();
     initDropBar();
-    initFeatured();
+    initLineup();
     initSmartSplit();
-    initFaqCarousel();
+    initFaqChat();
     initNewsletter();
     initSpinWheel();
     if (window.gsap) {
